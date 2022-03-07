@@ -36,7 +36,10 @@
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <ItemGroup>
-     <Compile Include="Assets\TutorialInfo\Scripts\Readme.cs" />
+     <Compile Include="Assets\Scripts\Monster.cs" />
+     <Compile Include="Assets\Scripts\CameraControl.cs" />
+     <Compile Include="Assets\Scripts\TurnManager.cs" />
+     <None Include="Assets\Shaders\Ground.shader" />
     <Reference Include="UnityEngine">
         <HintPath>C:\Program Files\Unity\Hub\Editor\2021.1.22f1\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
     </Reference>
