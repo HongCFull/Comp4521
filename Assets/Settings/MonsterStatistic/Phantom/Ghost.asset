@@ -19,3 +19,4 @@ MonoBehaviour:
   movementRange: 4
   level: 0
   experience: 0
+  speed: 5

@@ -12,16 +12,15 @@ public class MonsterStatistic : ScriptableObject
     [SerializeField] private int movementRange;
     [SerializeField] private int level;
     [SerializeField] private float experience;
-    //[SerializeField] private int attackRange;
+    [SerializeField] private float speed;
 
     public ElementType GetElementType() => elementType;
     public float GetMaxHealthPoint() => maxHealthPoint;
     public float GetAttack() => attack;
     public float GetDefense() => defense;
     public int GetMovementRange() => movementRange;
+    public float GetSpeed() => speed;
     public int GetMonsterLevel() => level;
     public float GetMonsterExperience() => experience;
-    //public int GetAttackRange() => attackRange;
-
     public float GainExperience(float exp) => experience += exp;
 }
