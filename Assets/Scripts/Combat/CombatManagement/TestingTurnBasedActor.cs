@@ -28,14 +28,11 @@ public class TestingTurnBasedActor : TurnBasedActor
         //if(Input.GetKeyDown(KeyCode.E))
         //    navMeshAgent.Move(destination.position);
     }
-    //BUG:putting this function in base class doesn't work
-    private void RegisterInCombatManager()=> CombatManager.Instance.RegisterNewTurnBasedActor(this);
     
-    protected override void UpdateTurnBasedActorSpeed(float speed) => Speed = speed;
-
     public override void OnActorTurnStart()
     {
-        Debug.Log("on "+gameObject.name+"'s turn now");
+        base.OnActorTurnStart();
+        //Debug.Log("on "+gameObject.name+"'s turn now");
         enablePlayerControl = true;
         HasExecutedActions = false;
         StartCoroutine(ExecuteTurnBasedActions());
@@ -43,11 +40,11 @@ public class TestingTurnBasedActor : TurnBasedActor
 
     public override void OnActorTurnEnd()
     {
-        Debug.Log("end "+gameObject.name+"'s turn now");
+        //Debug.Log("end "+gameObject.name+"'s turn now");
         enablePlayerControl = false;
     }
 
-    public override IEnumerator ExecuteTurnBasedActions()
+    protected override IEnumerator ExecuteTurnBasedActions()
     {
         navMeshAgent.destination = (destination.position);
 
@@ -67,7 +64,7 @@ public class TestingTurnBasedActor : TurnBasedActor
     bool HasReachedPosition(Vector3 pos)
     {
         float dist = (transform.position - pos).magnitude;
-        Debug.Log("dist = "+dist);
-        return dist<3f;
+        //Debug.Log("dist = "+dist);
+        return dist<0.5f;
     }
 }

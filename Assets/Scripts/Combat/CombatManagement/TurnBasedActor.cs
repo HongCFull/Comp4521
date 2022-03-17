@@ -4,10 +4,45 @@ using UnityEngine;
 
 public abstract class TurnBasedActor : MonoBehaviour
 {
-    public float Speed { get; protected set; }
-    protected abstract void UpdateTurnBasedActorSpeed(float speed);
+    /// <summary>
+    /// The speed of this turn based actor. Actor with higher speed has a higher priority to execute the action   
+    /// </summary>
+    public float Speed { get; private set; }
+    
+    /// <summary>
+    /// Whether this actor has finished the actions in this turn.
+    /// It should be set to true manually when the actor has finished all actions
+    /// </summary>
     public bool HasExecutedActions { get; protected set;}
-    public abstract void OnActorTurnStart();
-    public abstract void OnActorTurnEnd();
-    public abstract IEnumerator ExecuteTurnBasedActions();
+    
+    /// <summary>
+    /// Register this turn based actor in the combat manager. Should be done once only
+    /// </summary>
+    protected void RegisterInCombatManager()=> CombatManager.Instance.RegisterNewTurnBasedActor(this);
+
+    /// <summary>
+    /// Register this turn based actor in the combat manager. Should be done once only
+    /// </summary>
+    protected void UnregisterInCombatManager()=> CombatManager.Instance.UnregisterTurnBasedActor(this);
+
+    /// <summary>
+    /// Called when the turn of this actor started
+    /// </summary>
+    public virtual void OnActorTurnStart()=> HasExecutedActions = false;
+    
+    /// <summary>
+    /// Called when the turn of this actor ended 
+    /// </summary>
+    public virtual void OnActorTurnEnd() => HasExecutedActions = true;
+    
+    /// <summary>
+    /// The sequential actions that this actor needs to execute
+    /// </summary>
+    protected abstract IEnumerator ExecuteTurnBasedActions();
+
+    /// <summary>
+    /// The actor has to call this function to initialize the speed
+    /// </summary>
+    /// <param name="speed"></param>
+    protected void UpdateTurnBasedActorSpeed(float speed) => Speed = speed;
 }
