@@ -3,12 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Cinemachine;
+using Unity.Collections;
 using UnityEngine;
 
 public class CombatManager : MonoBehaviour
 {
-    [SerializeField] private List<TurnBasedActor> turnBasedActors;
+    [SerializeField] private List<TurnBasedActor> registeredActors;
     [SerializeField] private CinemachineVirtualCamera followCamera;
+    [SerializeField] private Queue<TurnBasedActor> turnProcessingQueue;
     public static CombatManager Instance { get; private set; }
     
     private const float ActionTimeLimit = 20f;
@@ -21,8 +23,16 @@ public class CombatManager : MonoBehaviour
         //TODO: Need to make sure the instance is not accessed before created
         if (!Instance)
             Instance = this;
-        turnBasedActors = new List<TurnBasedActor>();
+        
+        registeredActors = new List<TurnBasedActor>();
+        turnProcessingQueue = new Queue<TurnBasedActor>();
     }
+    
+//=================================================================================================================
+//Public Methods
+//=================================================================================================================
+
+    public void StartBattle()=> StartCoroutine(StartBattleCoroutine());
     
     /// <summary>
     /// Add the input TurnBasedActor to the list in the right order 
@@ -30,36 +40,35 @@ public class CombatManager : MonoBehaviour
     /// <param name="turnBasedActor">The TurnBasedActor to add</param>
     public void RegisterNewTurnBasedActor(TurnBasedActor turnBasedActor)
     {
-        turnBasedActors.Add(turnBasedActor); 
-        SortTurnBasedActorList();
+        registeredActors.Add(turnBasedActor); 
+        SortRegisteredActorListBySpeed();
     }
-
-    /// <summary>
-    /// Add the input TurnBasedActor to the list in the right order 
-    /// </summary>
-    /// <param name="turnBasedActor">The TurnBasedActor to remove from the list</param>
-    public void UnregisterTurnBasedActor(TurnBasedActor turnBasedActor)=> turnBasedActors.Remove(turnBasedActor);
     
-    public void StartBattle()
+    
+//=================================================================================================================
+// Private Methods
+//=================================================================================================================
+    IEnumerator  StartBattleCoroutine()
     {
-        StartCoroutine(StartBattleGameLoop());
-    }
-
-    IEnumerator StartBattleGameLoop()
-    {
-        WaitForSeconds turnSmoothingTime = new WaitForSeconds(TurnSmoothingTime);
         while (IsBattling) {
-            foreach (TurnBasedActor turnBasedActor in turnBasedActors) {
-                if(!turnBasedActor) continue;   //Prevent accessing null ref, as it may be deleted from the list elsewhere while iterating  
-                
-                SetCameraFocusOnActiveActor(turnBasedActor.transform);
-                yield return StartCoroutine(ProcessActor(turnBasedActor));
-                yield return turnSmoothingTime;
-            }
+            AssignActorsToTurnProcessingQueue();
+            yield return StartCoroutine(ProcessTheTurnQueueCoroutine());
         }
     }
 
-    IEnumerator ProcessActor(TurnBasedActor turnBasedActor)
+    IEnumerator ProcessTheTurnQueueCoroutine()
+    {
+        WaitForSeconds turnSmoothingTime = new WaitForSeconds(TurnSmoothingTime);
+        while (turnProcessingQueue.Count>0) {
+            TurnBasedActor actor = turnProcessingQueue.Dequeue();
+            if(!actor)  continue;   //the actor can be destroyed before it acts in this turn
+            SetCameraFocusOnActiveActor(actor.transform);
+            yield return StartCoroutine(ProcessTurnBasedActorCoroutine(actor));
+            yield return turnSmoothingTime;
+        }
+    }
+
+    IEnumerator ProcessTurnBasedActorCoroutine(TurnBasedActor turnBasedActor)
     {
         if(!turnBasedActor)
             yield break;
@@ -76,12 +85,16 @@ public class CombatManager : MonoBehaviour
         turnBasedActor.OnActorTurnEnd();
     }
 
+    void AssignActorsToTurnProcessingQueue()
+    {
+        foreach (TurnBasedActor actor in registeredActors) {
+            turnProcessingQueue.Enqueue(actor);
+        }
+    }
+    
     void SetCameraFocusOnActiveActor(Transform actorTransform) => followCamera.Follow = actorTransform;
+    
+    void SortRegisteredActorListBySpeed()=> registeredActors.Sort((x, y) => y.Speed.CompareTo(x.Speed));
 
-    /// <summary>
-    /// Sort the TurnBasedActor list by speed in a descending order 
-    /// </summary>
-    void SortTurnBasedActorList()=> turnBasedActors.Sort((x, y) => y.Speed.CompareTo(x.Speed));
-
-    void ClearTurnBasedActorList() => turnBasedActors.Clear();
+    void ClearTurnBasedActorList() => registeredActors.Clear();
 }

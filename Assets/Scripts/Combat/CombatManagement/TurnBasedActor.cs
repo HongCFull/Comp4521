@@ -16,15 +16,11 @@ public abstract class TurnBasedActor : MonoBehaviour
     public bool HasExecutedActions { get; protected set;}
     
     /// <summary>
-    /// Register this turn based actor in the combat manager. Should be done once only
+    /// Register this turn based actor in the combat manager. Should be done once an actor only
     /// </summary>
+    [ContextMenu("register actor in the combat manager list")]
     protected void RegisterInCombatManager()=> CombatManager.Instance.RegisterNewTurnBasedActor(this);
-
-    /// <summary>
-    /// Register this turn based actor in the combat manager. Should be done once only
-    /// </summary>
-    protected void UnregisterInCombatManager()=> CombatManager.Instance.UnregisterTurnBasedActor(this);
-
+    
     /// <summary>
     /// Called when the turn of this actor started
     /// </summary>
@@ -38,7 +34,7 @@ public abstract class TurnBasedActor : MonoBehaviour
     /// <summary>
     /// The sequential actions that this actor needs to execute
     /// </summary>
-    protected abstract IEnumerator ExecuteTurnBasedActions();
+    protected abstract IEnumerator StartActionsCoroutine();
 
     /// <summary>
     /// The actor has to call this function to initialize the speed

@@ -35,7 +35,7 @@ public class TestingTurnBasedActor : TurnBasedActor
         //Debug.Log("on "+gameObject.name+"'s turn now");
         enablePlayerControl = true;
         HasExecutedActions = false;
-        StartCoroutine(ExecuteTurnBasedActions());
+        StartCoroutine(StartActionsCoroutine());
     }
 
     public override void OnActorTurnEnd()
@@ -44,7 +44,7 @@ public class TestingTurnBasedActor : TurnBasedActor
         enablePlayerControl = false;
     }
 
-    protected override IEnumerator ExecuteTurnBasedActions()
+    protected override IEnumerator StartActionsCoroutine()
     {
         navMeshAgent.destination = (destination.position);
 
