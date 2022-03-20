@@ -9,8 +9,8 @@ using UnityEngine;
 public class CombatManager : MonoBehaviour
 {
     [SerializeField] private List<TurnBasedActor> registeredActors;
+    [SerializeField] private Queue<TurnBasedActor> turnOrder;
     [SerializeField] private CinemachineVirtualCamera followCamera;
-    [SerializeField] private Queue<TurnBasedActor> turnProcessingQueue;
     public static CombatManager Instance { get; private set; }
     
     private const float ActionTimeLimit = 20f;
@@ -25,7 +25,7 @@ public class CombatManager : MonoBehaviour
             Instance = this;
         
         registeredActors = new List<TurnBasedActor>();
-        turnProcessingQueue = new Queue<TurnBasedActor>();
+        turnOrder = new Queue<TurnBasedActor>();
     }
     
 //=================================================================================================================
@@ -59,9 +59,10 @@ public class CombatManager : MonoBehaviour
     IEnumerator ProcessTheTurnQueueCoroutine()
     {
         WaitForSeconds turnSmoothingTime = new WaitForSeconds(TurnSmoothingTime);
-        while (turnProcessingQueue.Count>0) {
-            TurnBasedActor actor = turnProcessingQueue.Dequeue();
+        while (turnOrder.Count>0) {
+            TurnBasedActor actor = turnOrder.Dequeue();
             if(!actor)  continue;   //the actor can be destroyed before it acts in this turn
+           
             SetCameraFocusOnActiveActor(actor.transform);
             yield return StartCoroutine(ProcessTurnBasedActorCoroutine(actor));
             yield return turnSmoothingTime;
@@ -88,7 +89,7 @@ public class CombatManager : MonoBehaviour
     void AssignActorsToTurnProcessingQueue()
     {
         foreach (TurnBasedActor actor in registeredActors) {
-            turnProcessingQueue.Enqueue(actor);
+            turnOrder.Enqueue(actor);
         }
     }
     

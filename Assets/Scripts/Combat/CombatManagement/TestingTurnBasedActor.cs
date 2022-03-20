@@ -10,10 +10,9 @@ public class TestingTurnBasedActor : TurnBasedActor
     private NavMeshAgent navMeshAgent;
     private bool enablePlayerControl = false;
     [SerializeField] private Transform destination;
-    [SerializeField] private float maxActionDuration = 10f;
     [SerializeField] private MonsterStatistic monsterStatistic;
     
-    private void Start()
+    void Start()
     {
         navMeshAgent = gameObject.GetComponent<NavMeshAgent>();
         UpdateTurnBasedActorSpeed(monsterStatistic.GetSpeed());
@@ -33,8 +32,8 @@ public class TestingTurnBasedActor : TurnBasedActor
     {
         base.OnActorTurnStart();
         //Debug.Log("on "+gameObject.name+"'s turn now");
-        enablePlayerControl = true;
-        HasExecutedActions = false;
+
+        ResetHasExecutedActions();
         StartCoroutine(StartActionsCoroutine());
     }
 
@@ -58,7 +57,7 @@ public class TestingTurnBasedActor : TurnBasedActor
         
         Debug.Log("playing attack animation for 2sec");
         yield return new WaitForSeconds(2f);
-        HasExecutedActions = true;
+        SetHasExecutedActions();
     }
 
     bool HasReachedPosition(Vector3 pos)

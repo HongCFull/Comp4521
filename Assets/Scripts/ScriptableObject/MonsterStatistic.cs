@@ -13,7 +13,6 @@ public class MonsterStatistic : ScriptableObject
     [SerializeField] private int level;
     [SerializeField] private float experience;
     [SerializeField] private float speed;
-
     public ElementType GetElementType() => elementType;
     public float GetMaxHealthPoint() => maxHealthPoint;
     public float GetAttack() => attack;

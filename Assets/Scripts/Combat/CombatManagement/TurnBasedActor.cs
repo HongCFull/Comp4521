@@ -4,41 +4,35 @@ using UnityEngine;
 
 public abstract class TurnBasedActor : MonoBehaviour
 {
-    /// <summary>
-    /// The speed of this turn based actor. Actor with higher speed has a higher priority to execute the action   
-    /// </summary>
+    // Indicate the maximum seconds of performing actions of this actor.
+    // Actions that are not performed in this time limit will be discarded immediately.
+    // Used to prevent the battle for stuck at this actor forever.  
+    protected const float maxActionDuration = 20f;
+    
+    // The speed of this turn based actor. Actor with higher speed has a higher priority to execute the action   
     public float Speed { get; private set; }
     
-    /// <summary>
-    /// Whether this actor has finished the actions in this turn.
-    /// It should be set to true manually when the actor has finished all actions
-    /// </summary>
-    public bool HasExecutedActions { get; protected set;}
+    // Whether this actor has finished the actions in this turn.
+    // It should be set to true manually when the actor has finished all actions
+    public bool HasExecutedActions { get; private set;}
     
-    /// <summary>
-    /// Register this turn based actor in the combat manager. Should be done once an actor only
-    /// </summary>
-    [ContextMenu("register actor in the combat manager list")]
-    protected void RegisterInCombatManager()=> CombatManager.Instance.RegisterNewTurnBasedActor(this);
-    
-    /// <summary>
-    /// Called when the turn of this actor started
-    /// </summary>
+    // Called when the turn of this actor started
     public virtual void OnActorTurnStart()=> HasExecutedActions = false;
     
-    /// <summary>
-    /// Called when the turn of this actor ended 
-    /// </summary>
+    // Called when the turn of this actor ended 
     public virtual void OnActorTurnEnd() => HasExecutedActions = true;
     
-    /// <summary>
-    /// The sequential actions that this actor needs to execute
-    /// </summary>
+    // The sequential actions that this actor needs to execute
     protected abstract IEnumerator StartActionsCoroutine();
+    
+    // Register this turn based actor in the combat manager. Should be done once an actor only
+    [ContextMenu("register actor in the combat manager list")]
+    protected void RegisterInCombatManager()=> CombatManager.Instance.RegisterNewTurnBasedActor(this);
 
-    /// <summary>
-    /// The actor has to call this function to initialize the speed
-    /// </summary>
-    /// <param name="speed"></param>
+    // The actor has to call this function to initialize the speed
     protected void UpdateTurnBasedActorSpeed(float speed) => Speed = speed;
+
+    protected void SetHasExecutedActions() => HasExecutedActions = true;
+    protected void ResetHasExecutedActions() => HasExecutedActions = false;
+
 }
