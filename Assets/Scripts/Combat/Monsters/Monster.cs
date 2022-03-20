@@ -22,14 +22,12 @@ public abstract class Monster : TurnBasedActor, IClickable
     {
         //Debug.Log("Monster::Awake",this);
         pathFindingComponent = GetComponent<PathFindingComponent>();
+        UpdateTurnBasedActorSpeed(monsterStatistic.GetSpeed());
+
     }
 
-    //TODO: may have to use awake as Monster will be spawned by using Instantiate<T>, not sure if necessary 
     protected virtual void Start()
     {
-        //Debug.Log("Monster::Start",this);
-        UpdateTurnBasedActorSpeed(monsterStatistic.GetSpeed());
-        RegisterInCombatManager();
     }
 //=================================================================================================================
 //Public Methods

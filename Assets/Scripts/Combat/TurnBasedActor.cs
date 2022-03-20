@@ -19,10 +19,6 @@ public abstract class TurnBasedActor : MonoBehaviour
     // The sequential actions that this actor needs to execute
     protected abstract IEnumerator StartActionsCoroutine();
     
-    // Register this turn based actor in the combat manager. Should be done once an actor only
-    [ContextMenu("register actor in the combat manager list")]
-    protected void RegisterInCombatManager()=> CombatManager.Instance.RegisterNewTurnBasedActor(this);
-
     // The actor has to call this function to initialize the speed
     protected void UpdateTurnBasedActorSpeed(float speed) => Speed = speed;
 

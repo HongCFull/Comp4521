@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Responsible for handling the event after clicking on a non-UI gameobject  
+/// </summary>
 public interface IClickable
 {
     public abstract void OnClickDown();

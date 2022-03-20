@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Cinemachine;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class CombatManager : MonoBehaviour
@@ -8,7 +9,7 @@ public class CombatManager : MonoBehaviour
     [SerializeField] private List<TurnBasedActor> registeredActors;
     [SerializeField] private Queue<TurnBasedActor> turnOrder;
     [SerializeField] private CinemachineVirtualCamera followCamera;
-    
+    [SerializeField] List<MonsterSpawningSetting> monsterSpawningSettings;
     public static CombatManager Instance { get; private set; }
     
     private const float ActionTimeLimit = 20f;  // Used to prevent the battle for stuck at an actor forever 
@@ -24,6 +25,7 @@ public class CombatManager : MonoBehaviour
         
         registeredActors = new List<TurnBasedActor>();
         turnOrder = new Queue<TurnBasedActor>();
+        InitializeLevel();
     }
     
 //=================================================================================================================
@@ -32,11 +34,14 @@ public class CombatManager : MonoBehaviour
 
     public void InitializeLevel()
     {
-        
+        SpawnMonsters();
     }
-    
-    public void StartBattle()=> StartCoroutine(StartBattleCoroutine());
-    
+
+    public void StartBattle()
+    {
+        StartCoroutine(StartBattleCoroutine());
+    }
+
     /// <summary>
     /// Add the input TurnBasedActor to the list in the right order 
     /// </summary>
@@ -51,7 +56,16 @@ public class CombatManager : MonoBehaviour
 //=================================================================================================================
 // Private Methods
 //=================================================================================================================
-    IEnumerator  StartBattleCoroutine()
+
+    void SpawnMonsters()
+    {
+        foreach (var monsterSetting in monsterSpawningSettings) {
+            Monster monster = Instantiate(monsterSetting.Monster,monsterSetting.positionToSpawn,quaternion.identity);
+            RegisterNewTurnBasedActor(monster);
+        }
+    }
+
+    IEnumerator StartBattleCoroutine()
     {
         while (IsBattling) {
             AssignActorsToTurnProcessingQueue();

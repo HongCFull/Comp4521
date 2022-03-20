@@ -529,9 +529,9 @@ GameObject:
   m_Component:
   - component: {fileID: 378761380670321101}
   - component: {fileID: 378761380677508653}
-  - component: {fileID: 1540554004450215960}
   - component: {fileID: 1540554004450215963}
   - component: {fileID: 1540554004450215962}
+  - component: {fileID: 2996709887850541805}
   m_Layer: 0
   m_Name: Bat
   m_TagString: Untagged
@@ -587,19 +587,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &1540554004450215960
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 378761380670090733}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 773686cee1092d34686aa44f463db4ee, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  monsterStatistic: {fileID: 11400000, guid: 22704b2b9ec49bf4499757356099bef1, type: 2}
 --- !u!195 &1540554004450215963
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -613,7 +600,7 @@ NavMeshAgent:
   m_Speed: 3.5
   m_Acceleration: 8
   avoidancePriority: 50
-  m_AngularSpeed: 120
+  m_AngularSpeed: 240
   m_StoppingDistance: 0
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
@@ -634,6 +621,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65c4cefefdae1a2459b9b5de0ff88e4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2996709887850541805
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 378761380670090733}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bfa241a71079d4f4cb47c33a87438e7f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  monsterStatistic: {fileID: 11400000, guid: 22704b2b9ec49bf4499757356099bef1, type: 2}
 --- !u!1 &378761380670090735
 GameObject:
   m_ObjectHideFlags: 0
