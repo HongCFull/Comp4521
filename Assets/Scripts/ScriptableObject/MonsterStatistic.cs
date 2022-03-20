@@ -5,6 +5,8 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewMonsterStatistic", menuName = "ScriptableObjects/NewMonsterStatistic", order = 1)]
 public class MonsterStatistic : ScriptableObject
 {
+    [SerializeField] private bool isUnlocked;
+    [SerializeField] private Monster monsterPrefab;
     [SerializeField] private ElementType elementType;
     [SerializeField] private float maxHealthPoint;
     [SerializeField] private float attack;
@@ -13,6 +15,7 @@ public class MonsterStatistic : ScriptableObject
     [SerializeField] private int level;
     [SerializeField] private float experience;
     [SerializeField] private float speed;
+    public bool GetIsUnlocked() => isUnlocked;
     public ElementType GetElementType() => elementType;
     public float GetMaxHealthPoint() => maxHealthPoint;
     public float GetAttack() => attack;
@@ -22,4 +25,5 @@ public class MonsterStatistic : ScriptableObject
     public int GetMonsterLevel() => level;
     public float GetMonsterExperience() => experience;
     public float GainExperience(float exp) => experience += exp;
+
 }

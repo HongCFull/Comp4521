@@ -12,11 +12,10 @@ public class PathFindingComponent : MonoBehaviour
 {
    private NavMeshAgent navMeshAgent;
    private NavMeshPath path;
-   private WaitForSeconds waitForSeconds;
+   
    private void Awake() {
       navMeshAgent = gameObject.GetComponent<NavMeshAgent>();
       path = new NavMeshPath();
-      waitForSeconds = new WaitForSeconds(0.2f);
    }
    
    public IEnumerator MoveToPositionCoroutine(Vector3 position)
@@ -26,7 +25,7 @@ public class PathFindingComponent : MonoBehaviour
       
       navMeshAgent.destination = position;
       while (!HasReachedPosition(position)) {
-         yield return waitForSeconds;
+         yield return new WaitForSeconds(0.2f);;
       }
    }
 

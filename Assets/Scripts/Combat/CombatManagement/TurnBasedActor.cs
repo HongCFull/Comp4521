@@ -1,14 +1,8 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class TurnBasedActor : MonoBehaviour
 {
-    // Indicate the maximum seconds of performing actions of this actor.
-    // Actions that are not performed in this time limit will be discarded immediately.
-    // Used to prevent the battle for stuck at this actor forever.  
-    protected const float maxActionDuration = 20f;
-    
     // The speed of this turn based actor. Actor with higher speed has a higher priority to execute the action   
     public float Speed { get; private set; }
     

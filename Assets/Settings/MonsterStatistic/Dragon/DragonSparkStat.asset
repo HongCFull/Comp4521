@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9913e1bb52de737499140465339aa871, type: 3}
   m_Name: DragonSparkStat
   m_EditorClassIdentifier: 
+  isUnlocked: 1
+  monsterPrefab: {fileID: 8712853698825610883, guid: f6770faf2b00f3f4cab31832f04825ef, type: 3}
   elementType: 0
   maxHealthPoint: 50
   attack: 10

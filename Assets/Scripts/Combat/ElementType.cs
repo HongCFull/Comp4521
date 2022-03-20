@@ -8,6 +8,5 @@ public enum ElementType
     WATER,
     GRASS,
     ICE,
-    INSECT,
     POISON
 }

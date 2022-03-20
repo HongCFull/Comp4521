@@ -1,9 +1,6 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using Cinemachine;
-using Unity.Collections;
 using UnityEngine;
 
 public class CombatManager : MonoBehaviour
@@ -11,9 +8,10 @@ public class CombatManager : MonoBehaviour
     [SerializeField] private List<TurnBasedActor> registeredActors;
     [SerializeField] private Queue<TurnBasedActor> turnOrder;
     [SerializeField] private CinemachineVirtualCamera followCamera;
+    
     public static CombatManager Instance { get; private set; }
     
-    private const float ActionTimeLimit = 20f;
+    private const float ActionTimeLimit = 20f;  // Used to prevent the battle for stuck at an actor forever 
     private const float TurnSmoothingTime = 0.2f;
 
     public bool IsBattling { get; private set; } = true;    //for testing
@@ -32,6 +30,11 @@ public class CombatManager : MonoBehaviour
 //Public Methods
 //=================================================================================================================
 
+    public void InitializeLevel()
+    {
+        
+    }
+    
     public void StartBattle()=> StartCoroutine(StartBattleCoroutine());
     
     /// <summary>

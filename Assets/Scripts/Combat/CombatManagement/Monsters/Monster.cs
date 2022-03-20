@@ -1,21 +1,23 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
+
+public enum MonsterType
+{
+    FRIENDLY,
+    ENEMY
+}
 
 [RequireComponent(typeof(PathFindingComponent))]
 public abstract class Monster : TurnBasedActor, IClickable
 {
-    [Header("Player Control")]
-    [Tooltip("Whether the player can control this actor")]
-    [SerializeField] private bool enablePlayerControl = false;
-    
     [Header("Reference Components")]
     [SerializeField] private MonsterStatistic monsterStatistic;
-    
-    private PathFindingComponent pathFindingComponent;
 
+    public MonsterType MonsterType { get; private set; }
+    private PathFindingComponent pathFindingComponent;
+    private bool enablePlayerControl = false;   //dynamically set 
+    
+    
     protected virtual void Awake()
     {
         //Debug.Log("Monster::Awake",this);
@@ -29,17 +31,18 @@ public abstract class Monster : TurnBasedActor, IClickable
         UpdateTurnBasedActorSpeed(monsterStatistic.GetSpeed());
         RegisterInCombatManager();
     }
+//=================================================================================================================
+//Public Methods
+//=================================================================================================================
 
-    //TODO: Show statistic of this monster 
     public void OnClickDown()
     {
-        
+        //TODO: Show statistic of this monster 
     }
 
-    //TODO: Hide the statistic of this monster
     public void OnClickRelease()
     {
-        
+        //TODO: Hide the statistic of this monster
     }
     
     public override void OnActorTurnStart()
@@ -53,7 +56,15 @@ public abstract class Monster : TurnBasedActor, IClickable
     public override void OnActorTurnEnd()
     {
     }
+
+    public void EnablePlayerControl()=> enablePlayerControl = true;
     
+    public void SetMonsterType(MonsterType monsterType)=> MonsterType = monsterType;
+    
+//=================================================================================================================
+//Protected Methods
+//=================================================================================================================
+
     protected override IEnumerator StartActionsCoroutine()
     {
         Vector3 randPos = pathFindingComponent.GetRandomReachablePosition(5f);
@@ -65,4 +76,9 @@ public abstract class Monster : TurnBasedActor, IClickable
         yield return new WaitForSeconds(2f);
         SetHasExecutedActions();  
     }
+    
+//=================================================================================================================
+//Private Methods
+//=================================================================================================================
+    
 }
