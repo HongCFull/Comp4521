@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Responsible for handling the event after clicking on a non-UI gameobject  
+/// Responsible for handling the event after clicking on a non-UI game objects  
 /// </summary>
 public interface IClickable
 {

@@ -18,10 +18,8 @@ public abstract class TurnBasedActor : MonoBehaviour
     
     // The sequential actions that this actor needs to execute
     protected abstract IEnumerator StartActionsCoroutine();
-    
     // The actor has to call this function to initialize the speed
     protected void UpdateTurnBasedActorSpeed(float speed) => Speed = speed;
-
     protected void SetHasExecutedActions() => HasExecutedActions = true;
     protected void ResetHasExecutedActions() => HasExecutedActions = false;
 

@@ -1,29 +1,27 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
-public enum MonsterType
-{
-    FRIENDLY,
-    ENEMY
-}
 
 [RequireComponent(typeof(PathFindingComponent))]
 public abstract class Monster : TurnBasedActor, IClickable
 {
-    [Header("Reference Components")]
     [SerializeField] private MonsterStatistic monsterStatistic;
-
-    public MonsterType MonsterType { get; private set; }
+    
     private PathFindingComponent pathFindingComponent;
     private bool enablePlayerControl = false;   //dynamically set 
-    
-    
+    private float maxHp;
+    private float currentHP;
+    private float attack;
+    private float defense;
+    private float speed;
+    private int level;
+
     protected virtual void Awake()
     {
-        //Debug.Log("Monster::Awake",this);
         pathFindingComponent = GetComponent<PathFindingComponent>();
-        UpdateTurnBasedActorSpeed(monsterStatistic.GetSpeed());
-
+        //TODO: Update the battle attribute of this instance according to the level
+        UpdateTurnBasedActorSpeed(speed);
     }
 
     protected virtual void Start()
@@ -32,7 +30,15 @@ public abstract class Monster : TurnBasedActor, IClickable
 //=================================================================================================================
 //Public Methods
 //=================================================================================================================
-
+    public void InitializeAttributesByLv(int lv)
+    {
+        maxHp = monsterStatistic.GetHealthPointAtLv(lv);
+        attack = monsterStatistic.GetAttackAtLv(lv);
+        defense = monsterStatistic.GetDefenseAtLv(lv);
+        speed = monsterStatistic.GetSpeedAtLv(lv);
+        currentHP = maxHp;
+    }
+    
     public void OnClickDown()
     {
         //TODO: Show statistic of this monster 
@@ -57,12 +63,12 @@ public abstract class Monster : TurnBasedActor, IClickable
 
     public void EnablePlayerControl()=> enablePlayerControl = true;
     
-    public void SetMonsterType(MonsterType monsterType)=> MonsterType = monsterType;
     
 //=================================================================================================================
 //Protected Methods
 //=================================================================================================================
 
+    //EXAMPLE OF Move -> Attack -> End
     protected override IEnumerator StartActionsCoroutine()
     {
         Vector3 randPos = pathFindingComponent.GetRandomReachablePosition(5f);
@@ -78,5 +84,5 @@ public abstract class Monster : TurnBasedActor, IClickable
 //=================================================================================================================
 //Private Methods
 //=================================================================================================================
-    
+
 }
