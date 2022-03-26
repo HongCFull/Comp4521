@@ -1,42 +1,33 @@
 {
   "project_info": {
-    "project_number": "389348919725",
-    "firebase_url": "https://comp4521-78152-default-rtdb.asia-southeast1.firebasedatabase.app",
-    "project_id": "comp4521-78152",
-    "storage_bucket": "comp4521-78152.appspot.com"
+    "project_number": "233541777504",
+    "project_id": "eggvolution-85385280",
+    "storage_bucket": "eggvolution-85385280.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:389348919725:android:4312054e9c2065df3b3924",
+        "mobilesdk_app_id": "1:233541777504:android:e5af74891d91554d216b05",
         "android_client_info": {
           "package_name": "com.HongCFull.Eggvolution"
         }
       },
       "oauth_client": [
         {
-          "client_id": "389348919725-neqgihcing8duqc5oo9t6dmu2gjfr1si.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.HongCFull.Eggvolution",
-            "certificate_hash": "c7d29f0d71a7cc513eeccb3a94f41d9cd2d4b004"
-          }
-        },
-        {
-          "client_id": "389348919725-1oj7hscsj1vp3t4u1l01suqo7e4mjnm2.apps.googleusercontent.com",
+          "client_id": "233541777504-1vjpv9kn9qikmco6mpondn84g55eg5k3.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCiuUU_0zG1QAJXREYsuXRkzGaX-RELycM"
+          "current_key": "AIzaSyAZsJuTXbqqCR7YGH1fb3skaSdXaigPCbQ"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "389348919725-1oj7hscsj1vp3t4u1l01suqo7e4mjnm2.apps.googleusercontent.com",
+              "client_id": "233541777504-1vjpv9kn9qikmco6mpondn84g55eg5k3.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
