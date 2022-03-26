@@ -523,15 +523,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60be5f079a69af04aa8ab3166e067036, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  registeredActors: []
   followCamera: {fileID: 695765559}
-  monsterSpawningSettings:
-  - Monster: {fileID: 8712853698825610883, guid: f6770faf2b00f3f4cab31832f04825ef, type: 3}
-    positionToSpawn: {x: 13.54, y: 0, z: 0}
-  - Monster: {fileID: 2996709887850541805, guid: 5536bbdff665e0847bda633e9850cfd6, type: 3}
-    positionToSpawn: {x: 13.54, y: 0, z: 6}
-  - Monster: {fileID: 6430719826492265008, guid: 2b4426394b38da944bcb8e4cfee5fa2a, type: 3}
-    positionToSpawn: {x: 2, y: 0, z: 2}
 --- !u!4 &281725103
 Transform:
   m_ObjectHideFlags: 0
@@ -688,7 +680,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 2.0555556, y: 1}
+    m_SensorSize: {x: 2, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
