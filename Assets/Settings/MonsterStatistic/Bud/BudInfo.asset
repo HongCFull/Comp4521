@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9913e1bb52de737499140465339aa871, type: 3}
+  m_Name: BudInfo
+  m_EditorClassIdentifier: 
+  evolutionChain: {fileID: 11400000, guid: 048de60d7ccb950478ae992707d6ff5a, type: 2}
+  isUnlocked: 0
+  monsterStage1Prefab: {fileID: 1736277712909129166, guid: e03cf5e78b27cc24286cfd41fc2d5725, type: 3}
+  elementType: 2
+  baseHealthPoint: 60
+  hpGrowthRate: 5
+  baseAttack: 7
+  attackGrowthRate: 4
+  baseDefense: 7
+  defenseGrowthRate: 4
+  baseSpeed: 8
+  speedGrowthRate: 4
+  movementRange: 4

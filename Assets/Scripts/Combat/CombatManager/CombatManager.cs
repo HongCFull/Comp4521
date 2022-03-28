@@ -13,7 +13,7 @@ public class CombatManager : MonoBehaviour
     
     private List<TurnBasedActor> registeredActors;
     private Queue<TurnBasedActor> turnOrder;
-    private List<TurnBasedActorSpawningInfo> actorSpawningInfos;
+    private List<TurnBasedActorSpawningSetting> actorSpawningInfos;
     
     private int allyCounts = 0;
     private int enemyCounts = 0;
@@ -28,7 +28,7 @@ public class CombatManager : MonoBehaviour
         
         registeredActors = new List<TurnBasedActor>();
         turnOrder = new Queue<TurnBasedActor>();
-        actorSpawningInfos = new List<TurnBasedActorSpawningInfo>();
+        actorSpawningInfos = new List<TurnBasedActorSpawningSetting>();
         
         InitializeLevel();
     }
@@ -51,11 +51,12 @@ public class CombatManager : MonoBehaviour
         ClearPreviousData();
         ReadLevelConstructionDataFromBuffer();
         SpawnTurnBasedActors();
+        SortRegisteredActorListBySpeed();
     }
     
     private void ReadLevelConstructionDataFromBuffer() 
     {
-        actorSpawningInfos = LevelConstructionBuffer.Instance.PopTurnBasedActorSpawningInfos();
+        actorSpawningInfos = LevelConstructionInfoBuffer.Instance.ConsumeTurnBasedActorSpawningInfos();
         //More to read afterward 
     }
 
@@ -70,16 +71,18 @@ public class CombatManager : MonoBehaviour
     
     void SpawnTurnBasedActors()
     {
-        foreach (var actorSetting in actorSpawningInfos) {
+        foreach (TurnBasedActorSpawningSetting actorSpawningInfo in actorSpawningInfos) {
             
-            TurnBasedActor actor = Instantiate(actorSetting.turnBasedActor,actorSetting.positionToSpawn,quaternion.identity);
-            RegisterNewTurnBasedActor(actor);
+            TurnBasedActor turnBasedActor = Instantiate(actorSpawningInfo.turnBasedActorInfo.GetTurnBasedActorPrefab(),actorSpawningInfo.positionToSpawn,quaternion.identity);
+            turnBasedActor.turnBasedActorType = actorSpawningInfo.turnBasedActorType;
             
-            Monster monster = actor as Monster;
+            RegisterNewTurnBasedActor(turnBasedActor);
+            
+            Monster monster = turnBasedActor as Monster;
             if(!monster) continue;
             
-            monster.InitializeAttributesByLv(actorSetting.lvToSpawn);
-            if (actorSetting.turnBasedActorType == TurnBasedActorType.FriendlyMonster) {
+            monster.InitializeAttributesByLv(actorSpawningInfo.monsterLv);
+            if (actorSpawningInfo.turnBasedActorType == TurnBasedActorType.FriendlyMonster) {
                 monster.EnablePlayerControl();
                 allyCounts++;
             }else {

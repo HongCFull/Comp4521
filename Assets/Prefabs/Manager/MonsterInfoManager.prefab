@@ -1,0 +1,61 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4185140185890040960
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4185140185890040962}
+  - component: {fileID: 4185140185890040963}
+  m_Layer: 0
+  m_Name: MonsterInfoManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4185140185890040962
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4185140185890040960}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4185140185890040963
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4185140185890040960}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 572263b19c209304194626d13291bf13, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  batInfo: {fileID: 11400000, guid: 22704b2b9ec49bf4499757356099bef1, type: 2}
+  beeInfo: {fileID: 11400000, guid: 57528a80d328fd546bf010ea25807856, type: 2}
+  bombInfo: {fileID: 11400000, guid: 7b09d0fa85422ec47b4eaa4c1c3ad45d, type: 2}
+  budInfo: {fileID: 11400000, guid: 78d265ce8ddf9434fb66b1c27c0de934, type: 2}
+  chickInfo: {fileID: 11400000, guid: 848638da880e040419f1b17cac9a1a53, type: 2}
+  dragonSparkInfo: {fileID: 11400000, guid: 4a92a43bcea038049a96d94279e448c5, type: 2}
+  eggletInfo: {fileID: 11400000, guid: 6c42629ae8d67454884449eee1665887, type: 2}
+  ghostInfo: {fileID: 11400000, guid: d4ff110746ce0f0458630d61a5c9bccc, type: 2}
+  mushroomInfo: {fileID: 11400000, guid: d402ee8f130e182499f4a416398ed731, type: 2}
+  seedInfo: {fileID: 11400000, guid: 20f3aea82a667cd42b55f75c6c32bdfc, type: 2}
+  shellInfo: {fileID: 11400000, guid: 0f4796607298254439ef34ee695666ca, type: 2}
+  snakeletInfo: {fileID: 11400000, guid: da9cfc97e32ff8148b6c8f97d3f1bf8c, type: 2}
+  spiderInfo: {fileID: 11400000, guid: bf33aa5cd0fd99b47a14918edde8ff1b, type: 2}
+  sunBlossomInfo: {fileID: 11400000, guid: 6acd98970dc0d2a49bf3a3d780cd25ec, type: 2}
+  targetDummyInfo: {fileID: 11400000, guid: b0681a698ffe72a40982342eb84645af, type: 2}
+  wolfPupInfo: {fileID: 11400000, guid: dd609128a567c72438e0b87306548a61, type: 2}

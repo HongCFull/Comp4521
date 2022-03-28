@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 
 [RequireComponent(typeof(PathFindingComponent))]
 public abstract class Monster : TurnBasedActor, IClickable
 {
-    [SerializeField] private MonsterStatistic monsterStatistic;
+    [SerializeField] private MonsterInfo monsterInfo;
     
     private PathFindingComponent pathFindingComponent;
     private bool enablePlayerControl = false;   //dynamically set 
@@ -32,11 +33,12 @@ public abstract class Monster : TurnBasedActor, IClickable
 //=================================================================================================================
     public void InitializeAttributesByLv(int lv)
     {
-        maxHp = monsterStatistic.GetHealthPointAtLv(lv);
-        attack = monsterStatistic.GetAttackAtLv(lv);
-        defense = monsterStatistic.GetDefenseAtLv(lv);
-        speed = monsterStatistic.GetSpeedAtLv(lv);
+        maxHp = monsterInfo.GetHealthPointAtLv(lv);
+        attack = monsterInfo.GetAttackAtLv(lv);
+        defense = monsterInfo.GetDefenseAtLv(lv);
+        speed = monsterInfo.GetSpeedAtLv(lv);
         currentHP = maxHp;
+        UpdateTurnBasedActorSpeed(speed);
     }
     
     public void OnClickDown()

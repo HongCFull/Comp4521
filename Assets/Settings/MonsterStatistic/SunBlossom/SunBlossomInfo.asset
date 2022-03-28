@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9913e1bb52de737499140465339aa871, type: 3}
+  m_Name: SunBlossomInfo
+  m_EditorClassIdentifier: 
+  evolutionChain: {fileID: 11400000, guid: 5d1fa2279b199cd4bb3d799cd57cf872, type: 2}
+  isUnlocked: 0
+  monsterStage1Prefab: {fileID: 581990293168516067, guid: 128db1eea9e18ad49b4efc5e15cdb39e, type: 3}
+  elementType: 2
+  baseHealthPoint: 55
+  hpGrowthRate: 4
+  baseAttack: 8
+  attackGrowthRate: 4
+  baseDefense: 10
+  defenseGrowthRate: 4
+  baseSpeed: 10
+  speedGrowthRate: 4
+  movementRange: 5

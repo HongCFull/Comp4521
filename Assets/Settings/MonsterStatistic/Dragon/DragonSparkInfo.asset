@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9913e1bb52de737499140465339aa871, type: 3}
+  m_Name: DragonSparkInfo
+  m_EditorClassIdentifier: 
+  evolutionChain: {fileID: 11400000, guid: dbae5081908e3c24a9526b3d8280eecd, type: 2}
+  isUnlocked: 1
+  monsterStage1Prefab: {fileID: 8712853698825610883, guid: f6770faf2b00f3f4cab31832f04825ef, type: 3}
+  elementType: 0
+  baseHealthPoint: 55
+  hpGrowthRate: 4
+  baseAttack: 10
+  attackGrowthRate: 4
+  baseDefense: 8
+  defenseGrowthRate: 4
+  baseSpeed: 8
+  speedGrowthRate: 4
+  movementRange: 4

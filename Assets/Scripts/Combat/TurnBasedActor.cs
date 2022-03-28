@@ -3,6 +3,8 @@ using UnityEngine;
 
 public abstract class TurnBasedActor : MonoBehaviour
 {
+    [HideInInspector] public TurnBasedActorType turnBasedActorType;
+    
     // The speed of this turn based actor. Actor with higher speed has a higher priority to execute the action   
     public float Speed { get; private set; }
     
