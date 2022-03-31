@@ -9854,7 +9854,7 @@ GameObject:
   - component: {fileID: 2733818535847787923}
   - component: {fileID: 6582839087040834452}
   - component: {fileID: 2506208304994491622}
-  - component: {fileID: 4902322611104642030}
+  - component: {fileID: 536077985675614646}
   m_Layer: 0
   m_Name: Bomb
   m_TagString: Untagged
@@ -9938,7 +9938,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65c4cefefdae1a2459b9b5de0ff88e4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &4902322611104642030
+--- !u!114 &536077985675614646
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9947,7 +9947,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2733818535838256723}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe54228d8ceb3a443aef9b7f8486a5bf, type: 3}
+  m_Script: {fileID: 11500000, guid: 17b52f6817c563a4b85d301f26ace90b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   turnBasedActorType: 0

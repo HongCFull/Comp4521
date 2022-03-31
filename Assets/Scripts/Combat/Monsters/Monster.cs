@@ -5,7 +5,7 @@ using UnityEngine.Serialization;
 
 
 [RequireComponent(typeof(PathFindingComponent))]
-public abstract class Monster : TurnBasedActor, IClickable
+public class Monster : TurnBasedActor, IClickable
 {
     [SerializeField] private MonsterInfo monsterInfo;
     

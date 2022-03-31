@@ -1060,7 +1060,7 @@ GameObject:
   - component: {fileID: 3512345035700739354}
   - component: {fileID: 2808122906016490909}
   - component: {fileID: 127519661579306684}
-  - component: {fileID: 534249801574594784}
+  - component: {fileID: 5459859599942928220}
   m_Layer: 0
   m_Name: Shell
   m_TagString: Untagged
@@ -1148,7 +1148,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65c4cefefdae1a2459b9b5de0ff88e4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &534249801574594784
+--- !u!114 &5459859599942928220
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1157,7 +1157,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3512345035693485786}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 51a7a87fb04782b40a0874afbd361d82, type: 3}
+  m_Script: {fileID: 11500000, guid: 17b52f6817c563a4b85d301f26ace90b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   turnBasedActorType: 0

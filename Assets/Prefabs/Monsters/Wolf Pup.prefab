@@ -153,7 +153,7 @@ GameObject:
   - component: {fileID: 6904056446358522351}
   - component: {fileID: 4698926756459017695}
   - component: {fileID: 4189458302966666166}
-  - component: {fileID: 6052625587824711370}
+  - component: {fileID: 3560825326631767605}
   m_Layer: 0
   m_Name: Wolf Pup
   m_TagString: Untagged
@@ -244,7 +244,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65c4cefefdae1a2459b9b5de0ff88e4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &6052625587824711370
+--- !u!114 &3560825326631767605
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -253,7 +253,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6904056446365956649}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 613950439c64f994eafae7110f2b37da, type: 3}
+  m_Script: {fileID: 11500000, guid: 17b52f6817c563a4b85d301f26ace90b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   turnBasedActorType: 0

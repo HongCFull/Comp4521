@@ -517,7 +517,7 @@ GameObject:
   - component: {fileID: 8712853698832995711}
   - component: {fileID: 8712853698825610940}
   - component: {fileID: 8712853698825610882}
-  - component: {fileID: 8712853698825610883}
+  - component: {fileID: 2756413511091192764}
   m_Layer: 0
   m_Name: Dragon Spark
   m_TagString: Untagged
@@ -610,7 +610,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65c4cefefdae1a2459b9b5de0ff88e4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &8712853698825610883
+--- !u!114 &2756413511091192764
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -619,7 +619,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8712853698825610941}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 773686cee1092d34686aa44f463db4ee, type: 3}
+  m_Script: {fileID: 11500000, guid: 17b52f6817c563a4b85d301f26ace90b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   turnBasedActorType: 0

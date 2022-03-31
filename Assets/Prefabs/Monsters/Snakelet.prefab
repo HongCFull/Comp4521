@@ -1245,7 +1245,7 @@ GameObject:
   - component: {fileID: 2528850189979796250}
   - component: {fileID: 4398812967816358548}
   - component: {fileID: 860743488540361808}
-  - component: {fileID: 1553179926827273989}
+  - component: {fileID: 1841441427958861661}
   m_Layer: 0
   m_Name: Snakelet
   m_TagString: Untagged
@@ -1336,7 +1336,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65c4cefefdae1a2459b9b5de0ff88e4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1553179926827273989
+--- !u!114 &1841441427958861661
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1345,7 +1345,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2528850189972517086}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b8f903746d343aa4a9cbbc4085e2bc33, type: 3}
+  m_Script: {fileID: 11500000, guid: 17b52f6817c563a4b85d301f26ace90b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   turnBasedActorType: 0

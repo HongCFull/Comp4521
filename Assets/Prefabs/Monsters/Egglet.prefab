@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5965800809667016065}
   - component: {fileID: 8863634258567259704}
   - component: {fileID: 8058682530306191109}
-  - component: {fileID: 8997489114959182504}
+  - component: {fileID: 2193296587123726507}
   m_Layer: 0
   m_Name: Egglet
   m_TagString: Untagged
@@ -92,7 +92,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65c4cefefdae1a2459b9b5de0ff88e4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &8997489114959182504
+--- !u!114 &2193296587123726507
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -101,7 +101,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5965800809657648705}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 96bb934ddcf168843bec902d0053ba4a, type: 3}
+  m_Script: {fileID: 11500000, guid: 17b52f6817c563a4b85d301f26ace90b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   turnBasedActorType: 0

@@ -531,7 +531,7 @@ GameObject:
   - component: {fileID: 378761380677508653}
   - component: {fileID: 1540554004450215963}
   - component: {fileID: 1540554004450215962}
-  - component: {fileID: 2996709887850541805}
+  - component: {fileID: 1350311870651599665}
   m_Layer: 0
   m_Name: Bat
   m_TagString: Untagged
@@ -621,7 +621,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65c4cefefdae1a2459b9b5de0ff88e4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &2996709887850541805
+--- !u!114 &1350311870651599665
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -630,7 +630,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 378761380670090733}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bfa241a71079d4f4cb47c33a87438e7f, type: 3}
+  m_Script: {fileID: 11500000, guid: 17b52f6817c563a4b85d301f26ace90b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   turnBasedActorType: 0

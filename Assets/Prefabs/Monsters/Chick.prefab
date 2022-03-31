@@ -380,7 +380,7 @@ GameObject:
   - component: {fileID: 6201120465239402105}
   - component: {fileID: 826837807509064384}
   - component: {fileID: 5188252280723909659}
-  - component: {fileID: 3617159473324970284}
+  - component: {fileID: 8587888982372579966}
   m_Layer: 0
   m_Name: Chick
   m_TagString: Untagged
@@ -459,7 +459,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65c4cefefdae1a2459b9b5de0ff88e4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &3617159473324970284
+--- !u!114 &8587888982372579966
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -468,7 +468,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6201120465229878713}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 18cd2effb3e38074886bba822aba2c03, type: 3}
+  m_Script: {fileID: 11500000, guid: 17b52f6817c563a4b85d301f26ace90b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   turnBasedActorType: 0

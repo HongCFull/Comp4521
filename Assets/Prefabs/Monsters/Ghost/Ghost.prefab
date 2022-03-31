@@ -539,7 +539,7 @@ GameObject:
   - component: {fileID: 6430719826501788159}
   - component: {fileID: 7491213404946988850}
   - component: {fileID: 7491213404946988852}
-  - component: {fileID: 6430719826492265008}
+  - component: {fileID: 1608557622390292088}
   m_Layer: 0
   m_Name: Ghost
   m_TagString: Untagged
@@ -632,7 +632,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65c4cefefdae1a2459b9b5de0ff88e4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &6430719826492265008
+--- !u!114 &1608557622390292088
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -641,7 +641,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6430719826492265023}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3b1bd1b5efccec24291c985212a5ca1b, type: 3}
+  m_Script: {fileID: 11500000, guid: 17b52f6817c563a4b85d301f26ace90b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   turnBasedActorType: 0

@@ -409,7 +409,7 @@ GameObject:
   - component: {fileID: 6854734739104228954}
   - component: {fileID: 5244940961666163636}
   - component: {fileID: 1813197856738949945}
-  - component: {fileID: 581990293168516067}
+  - component: {fileID: 5239773114861482805}
   m_Layer: 0
   m_Name: Sun Blossom
   m_TagString: Untagged
@@ -501,7 +501,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65c4cefefdae1a2459b9b5de0ff88e4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &581990293168516067
+--- !u!114 &5239773114861482805
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -510,7 +510,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6854734739094836634}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c017bdcb108a3434bb8889e74f7266ac, type: 3}
+  m_Script: {fileID: 11500000, guid: 17b52f6817c563a4b85d301f26ace90b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   turnBasedActorType: 0

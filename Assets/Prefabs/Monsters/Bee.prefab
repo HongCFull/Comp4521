@@ -471,7 +471,7 @@ GameObject:
   - component: {fileID: 7751583926197805946}
   - component: {fileID: 2420018693635796895}
   - component: {fileID: 2496884087757686125}
-  - component: {fileID: 4942448334333808136}
+  - component: {fileID: 5130040352401847716}
   m_Layer: 0
   m_Name: Bee
   m_TagString: Untagged
@@ -559,7 +559,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65c4cefefdae1a2459b9b5de0ff88e4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &4942448334333808136
+--- !u!114 &5130040352401847716
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -568,7 +568,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7751583926190379194}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f2cbca7dfbde4fb4484742cd749eb605, type: 3}
+  m_Script: {fileID: 11500000, guid: 17b52f6817c563a4b85d301f26ace90b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   turnBasedActorType: 0
