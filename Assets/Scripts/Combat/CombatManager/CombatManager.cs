@@ -9,7 +9,7 @@ public class CombatManager : MonoBehaviour
     [SerializeField] private CinemachineVirtualCamera followCamera;
     public static CombatManager Instance { get; private set; }
     private const float ActionTimeLimit = 20f;  // Used to prevent the battle for stuck at an actor forever 
-    private const float TurnSmoothingTime = 0.2f;
+    private const float TurnSmoothingTime = 0.1f;
     
     private List<TurnBasedActor> registeredActors;
     private Queue<TurnBasedActor> turnOrder;

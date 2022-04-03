@@ -1,6 +1,14 @@
 using System.Collections;
 using UnityEngine;
 
+public enum TurnBasedActorType
+{
+    FriendlyMonster,
+    EnemyMonster,
+    Other
+}
+
+
 public abstract class TurnBasedActor : MonoBehaviour
 {
     [HideInInspector] public TurnBasedActorType turnBasedActorType;

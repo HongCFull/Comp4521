@@ -27,11 +27,3 @@ public struct TurnBasedActorSpawningSetting
         return setting;
     }
 }
-
-
-public enum TurnBasedActorType
-{
-    FriendlyMonster,
-    EnemyMonster,
-    Other
-}

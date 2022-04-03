@@ -8,7 +8,7 @@ public class MonsterInfo : TurnBasedActorInfo
     [Header("The Evolution Chain This Monster Belongs To")]
     [SerializeField] private EvolutionChain evolutionChain;
     [SerializeField] private bool isUnlocked;
-    [SerializeField] private Monster monsterStage1Prefab;
+    [SerializeField] private Monster monsterPrefab;
 
     [Header("ElementType")]
     [SerializeField] private ElementType elementType;
@@ -43,5 +43,5 @@ public class MonsterInfo : TurnBasedActorInfo
     public float GetSpeedAtLv(int lv) => baseSpeed + Mathf.Pow(GetLevelRatio(lv),speedGrowthRate);
     private float GetLevelRatio(int lv) => lv > 1 ? Mathf.Sqrt(lv) + 1 : 1;
 
-    public override TurnBasedActor GetTurnBasedActorPrefab() => monsterStage1Prefab;
+    public override TurnBasedActor GetTurnBasedActorPrefab() => monsterPrefab;
 }

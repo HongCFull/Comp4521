@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   evolutionChain: {fileID: 11400000, guid: 78887807be0fb6c4fa68b838b71db234, type: 2}
   isUnlocked: 0
-  monsterStage1Prefab: {fileID: 5487310042793120116, guid: 409820a035694de48b863553273040a9, type: 3}
+  monsterPrefab: {fileID: 6563016441651783391, guid: 409820a035694de48b863553273040a9, type: 3}
   elementType: 4
   baseHealthPoint: 45
   hpGrowthRate: 4
