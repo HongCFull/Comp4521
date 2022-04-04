@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Cinemachine;
@@ -20,7 +21,7 @@ public class CombatManager : MonoBehaviour
     
     public bool IsBattling { get; private set; } = true;  //for testing
 
-    private void Awake()
+    private void Start()
     {
         //TODO: Need to make sure the instance is not accessed before created
         if (!Instance)
@@ -32,8 +33,13 @@ public class CombatManager : MonoBehaviour
         
         InitializeLevel();
     }
-    
-//=================================================================================================================
+
+    private void Update()
+    {
+      
+    }
+
+    //=================================================================================================================
 //Public Methods
 //=================================================================================================================
 
@@ -83,7 +89,7 @@ public class CombatManager : MonoBehaviour
             
             monster.InitializeAttributesByLv(actorSpawningInfo.monsterLv);
             if (actorSpawningInfo.turnBasedActorType == TurnBasedActorType.FriendlyMonster) {
-                monster.EnablePlayerControl();
+                monster.monsterController.EnablePlayerControl();
                 allyCounts++;
             }else {
                 enemyCounts++;

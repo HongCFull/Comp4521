@@ -31,6 +31,5 @@ public abstract class TurnBasedActor : MonoBehaviour
     // The actor has to call this function to initialize the speed
     protected void UpdateTurnBasedActorSpeed(float speed) => Speed = speed;
     protected void SetHasExecutedActions() => HasExecutedActions = true;
-    protected void ResetHasExecutedActions() => HasExecutedActions = false;
 
 }

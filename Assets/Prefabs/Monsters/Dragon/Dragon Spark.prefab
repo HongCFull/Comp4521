@@ -610,6 +610,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65c4cefefdae1a2459b9b5de0ff88e4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enablePlayerControl: 0
+  monster: {fileID: 0}
 --- !u!114 &2756413511091192764
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -624,6 +626,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   turnBasedActorType: 0
   monsterInfo: {fileID: 11400000, guid: 4a92a43bcea038049a96d94279e448c5, type: 2}
+  monsterController: {fileID: 8712853698825610882}
 --- !u!1 &8712853698825610945
 GameObject:
   m_ObjectHideFlags: 0

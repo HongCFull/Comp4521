@@ -4,13 +4,11 @@ using UnityEngine;
 using UnityEngine.Serialization;
 
 
-[RequireComponent(typeof(PathFindingComponent))]
+[RequireComponent(typeof(MonsterController))]
 public class Monster : TurnBasedActor, IClickable
 {
     [SerializeField] private MonsterInfo monsterInfo;
-    
-    private PathFindingComponent pathFindingComponent;
-    private bool enablePlayerControl = false;   //dynamically set 
+    public MonsterController monsterController;
     private float maxHp;
     private float currentHP;
     private float attack;
@@ -20,7 +18,8 @@ public class Monster : TurnBasedActor, IClickable
 
     protected virtual void Awake()
     {
-        pathFindingComponent = GetComponent<PathFindingComponent>();
+        monsterController.monster = this;
+        
         //TODO: Update the battle attribute of this instance according to the level
         UpdateTurnBasedActorSpeed(speed);
     }
@@ -28,6 +27,7 @@ public class Monster : TurnBasedActor, IClickable
     protected virtual void Start()
     {
     }
+    
 //=================================================================================================================
 //Public Methods
 //=================================================================================================================
@@ -43,7 +43,7 @@ public class Monster : TurnBasedActor, IClickable
     
     public void OnClickDown()
     {
-        //TODO: Show statistic of this monster 
+        //TODO: Show statistic of this monster
     }
 
     public void OnClickRelease()
@@ -54,28 +54,25 @@ public class Monster : TurnBasedActor, IClickable
     public override void OnActorTurnStart()
     {
         base.OnActorTurnStart();
-
-        ResetHasExecutedActions();
+        
         StartCoroutine(StartActionsCoroutine());
     }
-
+    
     public override void OnActorTurnEnd()
     {
     }
 
-    public void EnablePlayerControl()=> enablePlayerControl = true;
+    public MonsterController GetMonsterController() => monsterController;
     
     
 //=================================================================================================================
 //Protected Methods
 //=================================================================================================================
-
+    
     //EXAMPLE OF Move -> Attack -> End
     protected override IEnumerator StartActionsCoroutine()
     {
-        Vector3 randPos = pathFindingComponent.GetRandomReachablePosition(5f);
-
-        yield return StartCoroutine(pathFindingComponent.MoveToPositionCoroutine(randPos));
+        yield return StartCoroutine(monsterController.ProcessMonsterMovementCoroutine());
         
         Debug.Log("playing attack animation for 2sec");
         
@@ -86,5 +83,5 @@ public class Monster : TurnBasedActor, IClickable
 //=================================================================================================================
 //Private Methods
 //=================================================================================================================
-
+    
 }

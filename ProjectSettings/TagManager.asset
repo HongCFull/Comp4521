@@ -3,12 +3,13 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - TurnBasedGrid
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - TurnBasedGrid
   - Water
   - UI
   - 
