@@ -65,15 +65,17 @@ public class MonsterController : MonoBehaviour
       
       Vector3 screenToWorldPoint = mainCamera.ScreenToWorldPoint(Input.mousePosition);
       Vector3 direction = mainCamera.transform.rotation*Vector3.forward*100f;
-      Ray ray = new Ray(screenToWorldPoint, direction);
+      Ray ray = new Ray(screenToWorldPoint, RayCastDistance*direction);
       RaycastHit hit ;
       Vector3 worldPos = Vector3.zero;
       
-      Debug.DrawRay(ray.origin,ray.direction,Color.cyan,3f);
+      Debug.DrawRay(ray.origin,RayCastDistance*ray.direction,Color.cyan,3f);
 
       bool hitSomeThing = Physics.Raycast(ray, out hit, RayCastDistance);
-      if (!hitSomeThing)
+      if (!hitSomeThing) {
+         Debug.Log("cant hit something,remember to assign collider to the object!");
          return;
+      }
       
       if (hit.transform.gameObject.layer.Equals(LayerMask.NameToLayer("TurnBasedGrid"))) 
          worldPos = hit.transform.position;

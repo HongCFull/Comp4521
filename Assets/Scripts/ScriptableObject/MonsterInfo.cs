@@ -29,7 +29,6 @@ public class MonsterInfo : TurnBasedActorInfo
     [SerializeField] private float baseSpeed;
     [SerializeField] private float speedGrowthRate;
     [SerializeField] private int movementRange;
-
     
     public bool IsUnlocked => isUnlocked;
     public ElementType ElementType => elementType;

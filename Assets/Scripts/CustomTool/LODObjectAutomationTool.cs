@@ -4,10 +4,10 @@ using UnityEngine;
 
 namespace CustomTool
 {
-    public class LODObjectCleaner : MonoBehaviour
+    public class LODObjectAutomationTool : MonoBehaviour
     {
         [SerializeField] private List<LODGroup > lodGroups;
-
+        [SerializeField] private List<GameObject> lod0GameObjectParents;
         /// <summary>
         /// Only keep the LOD 0 object (only works if the object name has "LOD0")
         /// </summary>
@@ -38,5 +38,17 @@ namespace CustomTool
             lodGroups.Clear();
         }
         
+        [ContextMenu("Add mesh collider to lod0 objects")]
+        void AddMeshColliderToLOD0Object()
+        {
+            foreach (var lod0GameObjectParent in lod0GameObjectParents) {
+                foreach (Transform child in lod0GameObjectParent.gameObject.transform) {
+                    if (child.gameObject.name.Contains("LOD0"))
+                        child.gameObject.AddComponent<MeshCollider>();
+                }
+            }
+            lod0GameObjectParents.Clear();
+        }
+
     }
 }
