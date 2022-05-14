@@ -15,6 +15,7 @@ public class Monster : TurnBasedActor, IClickable
     private float defense;
     private float speed;
     private int level;
+    private Animator animator;
 
     protected virtual void Awake()
     {
@@ -22,6 +23,7 @@ public class Monster : TurnBasedActor, IClickable
         
         //TODO: Update the battle attribute of this instance according to the level
         UpdateTurnBasedActorSpeed(speed);
+        animator = GetComponent<Animator>();
     }
 
     protected virtual void Start()
@@ -75,6 +77,7 @@ public class Monster : TurnBasedActor, IClickable
         yield return StartCoroutine(monsterController.ProcessMonsterMovementCoroutine());
         
         Debug.Log("playing attack animation for 2sec");
+        animator.SetTrigger("Melee");
         
         yield return new WaitForSeconds(2f);
         SetHasExecutedActions();  
