@@ -14,8 +14,8 @@ public class CombatManager : MonoBehaviour
     
     private List<TurnBasedActor> registeredActors;
     private Queue<TurnBasedActor> turnOrder;
-    private List<TurnBasedActorSpawningSetting> actorSpawningInfos;
-    
+    public BattleTerrain battleTerrain { get; private set; }
+
     private int allyCounts = 0;
     private int enemyCounts = 0;
     
@@ -29,17 +29,10 @@ public class CombatManager : MonoBehaviour
         
         registeredActors = new List<TurnBasedActor>();
         turnOrder = new Queue<TurnBasedActor>();
-        actorSpawningInfos = new List<TurnBasedActorSpawningSetting>();
-        
         InitializeLevel();
     }
 
-    private void Update()
-    {
-      
-    }
-
-    //=================================================================================================================
+//=================================================================================================================
 //Public Methods
 //=================================================================================================================
 
@@ -55,28 +48,30 @@ public class CombatManager : MonoBehaviour
     void InitializeLevel()
     {
         ClearPreviousData();
-        ReadLevelConstructionDataFromBuffer();
+        SpawnBattleTerrain();
         SpawnTurnBasedActors();
         SortRegisteredActorListBySpeed();
     }
     
-    private void ReadLevelConstructionDataFromBuffer() 
-    {
-        actorSpawningInfos = LevelConstructionInfoBuffer.Instance.ConsumeTurnBasedActorSpawningInfos();
-        //More to read afterward 
-    }
-
+    
     void ClearPreviousData()
     {
         allyCounts = 0;
         enemyCounts = 0;
         registeredActors.Clear();
         turnOrder.Clear();
-        actorSpawningInfos.Clear();
+    }
+
+    void SpawnBattleTerrain()
+    {
+        BattleTerrainSetting battleTerrainSetting = LevelConstructionInfoBuffer.Instance.battleTerrainSettingInfo;
+        battleTerrain = battleTerrainSetting.GetBattleTerrain();
+        Instantiate(battleTerrain, battleTerrainSetting.GetTerrainSpawnPoint(), quaternion.identity);
     }
     
     void SpawnTurnBasedActors()
     {
+        List<TurnBasedActorSpawningSetting> actorSpawningInfos = LevelConstructionInfoBuffer.Instance.ConsumeTurnBasedActorSpawningInfos();
         foreach (TurnBasedActorSpawningSetting actorSpawningInfo in actorSpawningInfos) {
             
             TurnBasedActor turnBasedActor = Instantiate(actorSpawningInfo.turnBasedActorInfo.GetTurnBasedActorPrefab(),actorSpawningInfo.positionToSpawn,quaternion.identity);

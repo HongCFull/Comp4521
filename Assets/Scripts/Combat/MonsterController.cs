@@ -6,7 +6,6 @@ using UnityEngine;
 using UnityEngine.AI;
 using Random = UnityEngine.Random;
 
-
 [RequireComponent(typeof(NavMeshAgent))]
 public class MonsterController : MonoBehaviour
 {
@@ -59,31 +58,29 @@ public class MonsterController : MonoBehaviour
 
    void HandlePlayerScreenTouchInput()
    {
-#if UNITY_EDITOR
       if (!Input.GetMouseButtonDown(0))
          return;
-      
+
       Vector3 screenToWorldPoint = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-      Vector3 direction = mainCamera.transform.rotation*Vector3.forward*100f;
-      Ray ray = new Ray(screenToWorldPoint, RayCastDistance*direction);
-      RaycastHit hit ;
+      Vector3 direction = mainCamera.transform.rotation * Vector3.forward * 100f;
+      Ray ray = new Ray(screenToWorldPoint, RayCastDistance * direction);
+      RaycastHit hit;
       Vector3 worldPos = Vector3.zero;
-      
-      Debug.DrawRay(ray.origin,RayCastDistance*ray.direction,Color.cyan,3f);
+
+      Debug.DrawRay(ray.origin, RayCastDistance * ray.direction, Color.cyan, 3f);
 
       bool hitSomeThing = Physics.Raycast(ray, out hit, RayCastDistance);
-      if (!hitSomeThing) {
+      if (!hitSomeThing)
+      {
          Debug.Log("cant hit something,remember to assign collider to the object!");
          return;
       }
-      
-      if (hit.transform.gameObject.layer.Equals(LayerMask.NameToLayer("TurnBasedGrid"))) 
-         worldPos = hit.transform.position;
-     
-#elif UNITY_ANDROID
 
-#endif
-      
+      GameObject objectHit = hit.transform.gameObject;
+      if (objectHit.layer.Equals(LayerMask.NameToLayer("TurnBasedGrid"))) {
+         worldPos = hit.transform.position;
+      }
+
       if (IsValidGrid(worldPos)) {
          gridPosition = GetNearestGridWorldPos(worldPos);
          gotAvailableGridPos = true;

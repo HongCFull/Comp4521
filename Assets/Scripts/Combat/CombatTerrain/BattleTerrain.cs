@@ -22,8 +22,7 @@ public struct TileCoordinate
 {
     public int row;
     public int col;
-} 
-
+}
 
 public class BattleTerrain : MonoBehaviour
 {
@@ -36,8 +35,7 @@ public class BattleTerrain : MonoBehaviour
     [SerializeField] private int height;
 
     [SerializeField] private List<TileCoordinate> initObstacles;
-
-
+    
     public GridInfo[,] gridInfos { get; private set; }
     
     private GridInfo[] stretchedGridInfo;
@@ -114,9 +112,8 @@ public class BattleTerrain : MonoBehaviour
         var rng = new System.Random();
         rng.Shuffle(stretchedGridInfo);
     }
-    
-    
-    
+
+
 #if UNITY_EDITOR
     [ContextMenu("Show GridInfos")]
     public void ShowGridInfos()

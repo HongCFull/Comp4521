@@ -8,6 +8,7 @@ using Random = UnityEngine.Random;
 
 public class LevelConstructionInfoSender : MonoBehaviour
 {
+    [SerializeField] private BattleTerrainSetting battleTerrainSettingInfo;
     [SerializeField] private List<TurnBasedActorSpawningSetting> enemyActorSpawningInfos;
     [SerializeField] private List<EvolutionChain> userMonsterChain;
     [SerializeField] private UnityEvent OnFinishSending;
@@ -16,6 +17,8 @@ public class LevelConstructionInfoSender : MonoBehaviour
     public void SendLevelConstructionInfoToBuffer()
     {
         LevelConstructionInfoBuffer.Instance.AddActorSpawningInfo(enemyActorSpawningInfos);
+        LevelConstructionInfoBuffer.Instance.AssignBattleTerrainSetting(battleTerrainSettingInfo);
+        
         SendUserMonsterSpawningInfoToBuffer();
         OnFinishSending.Invoke();
     }
@@ -31,5 +34,6 @@ public class LevelConstructionInfoSender : MonoBehaviour
             LevelConstructionInfoBuffer.Instance.AddActorSpawningInfo(setting);
         }
     }
+    
 
 }
