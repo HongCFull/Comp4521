@@ -8,7 +8,6 @@ public class LevelConstructionInfoBuffer : MonoBehaviour
 {
     public static LevelConstructionInfoBuffer Instance { get; private set; }
     private List<TurnBasedActorSpawningSetting> actorSpawningInfos = new List<TurnBasedActorSpawningSetting>();
-    public BattleTerrainSetting battleTerrainSettingInfo { get; private set;}
     
     void Start()
     {
@@ -30,7 +29,6 @@ public class LevelConstructionInfoBuffer : MonoBehaviour
         actorSpawningInfos.Clear();
         return temp;
     }
-    public void AssignBattleTerrainSetting(BattleTerrainSetting terrainSetting) => battleTerrainSettingInfo=terrainSetting;
     public void AddActorSpawningInfo(TurnBasedActorSpawningSetting setting) => actorSpawningInfos.Add(setting);
     public void AddActorSpawningInfo(List<TurnBasedActorSpawningSetting> infos) => actorSpawningInfos.AddRange(infos);
 

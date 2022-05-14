@@ -12,6 +12,6 @@ EditorBuildSettings:
     path: Assets/Scenes/LevelPreloadTesting.unity
     guid: 4b2380b17d4ec2742add84868e39d61b
   - enabled: 1
-    path: Assets/Scenes/CombatTestingScene.unity
+    path: Assets/Scenes/GrassRegion.unity
     guid: cb174a995fb662a4aaf04fea404e0be0
   m_configObjects: {}

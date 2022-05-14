@@ -66,31 +66,29 @@ public class MonsterController : MonoBehaviour
       Ray ray = new Ray(screenToWorldPoint, RayCastDistance * direction);
       RaycastHit hit;
       Vector3 worldPos = Vector3.zero;
-
-      Debug.DrawRay(ray.origin, RayCastDistance * ray.direction, Color.cyan, 3f);
+      //Debug.DrawRay(ray.origin, RayCastDistance * ray.direction, Color.cyan, 3f);
 
       bool hitSomeThing = Physics.Raycast(ray, out hit, RayCastDistance);
-      if (!hitSomeThing)
-      {
+      if (!hitSomeThing) {
          Debug.Log("cant hit something,remember to assign collider to the object!");
          return;
       }
 
       GameObject objectHit = hit.transform.gameObject;
+      Debug.Log("ray cast object name = "+objectHit +" with pos = "+objectHit.transform.position);
       if (objectHit.layer.Equals(LayerMask.NameToLayer("TurnBasedGrid"))) {
-         worldPos = hit.transform.position;
+         worldPos = CombatManager.Instance.battleTerrain.GetWalkableGridCenterByWorldPos(objectHit.transform.position);
       }
 
       if (IsValidGrid(worldPos)) {
-         gridPosition = GetNearestGridWorldPos(worldPos);
+         gridPosition = worldPos;
          gotAvailableGridPos = true;
       }
    }
    
    void AskForAIMovementInput()
    {
-      Vector3 randPos = GetRandomReachablePosition(6);
-      gridPosition = GetNearestGridWorldPos(randPos);
+      gridPosition = GetRandomReachablePosition(6);
    }
 
    IEnumerator AskForPlayerMovementInput()
@@ -129,13 +127,7 @@ public class MonsterController : MonoBehaviour
    private bool HasReachedPosition(Transform destTransform,float tolerance = 0.5f) => (transform.position - destTransform.position).magnitude < tolerance;
 
    private bool IsValidGrid(Vector3 worldPos) => true;
-
-   private Vector3 GetNearestGridWorldPos(Vector3 pos)
-   {
-      NavMeshHit hit;
-      NavMesh.SamplePosition(pos, out hit, 5f, NavMesh.AllAreas);
-      return hit.position;
-   }
+   
 
    private void ResetMonsterControllerState()
    {
@@ -146,10 +138,11 @@ public class MonsterController : MonoBehaviour
 //NOTE: For Development Testing Only   
    public Vector3 GetRandomReachablePosition(float walkRadius)
    {
-      Vector3 randomPosition = transform.position + Random.insideUnitSphere * walkRadius;
-      NavMeshHit hit;
-      NavMesh.SamplePosition(randomPosition, out hit, walkRadius, NavMesh.AllAreas);
-      return hit.position;
+      Vector3 randomPosition = transform.position;
+      randomPosition.x += Random.insideUnitCircle.x*walkRadius;
+      randomPosition.y = 0;
+      randomPosition.z += Random.insideUnitCircle.y*walkRadius;
+      return CombatManager.Instance.battleTerrain.GetWalkableGridCenterByWorldPos(randomPosition);
    }
    
 }

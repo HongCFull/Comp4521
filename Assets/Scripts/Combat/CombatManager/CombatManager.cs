@@ -8,13 +8,14 @@ using UnityEngine;
 public class CombatManager : MonoBehaviour
 {
     [SerializeField] private CinemachineVirtualCamera followCamera;
+    public BattleTerrain battleTerrain;
+    
     public static CombatManager Instance { get; private set; }
     private const float ActionTimeLimit = 20f;  // Used to prevent the battle for stuck at an actor forever 
     private const float TurnSmoothingTime = 0.1f;
     
     private List<TurnBasedActor> registeredActors;
     private Queue<TurnBasedActor> turnOrder;
-    public BattleTerrain battleTerrain { get; private set; }
 
     private int allyCounts = 0;
     private int enemyCounts = 0;
@@ -48,11 +49,9 @@ public class CombatManager : MonoBehaviour
     void InitializeLevel()
     {
         ClearPreviousData();
-        SpawnBattleTerrain();
         SpawnTurnBasedActors();
         SortRegisteredActorListBySpeed();
     }
-    
     
     void ClearPreviousData()
     {
@@ -60,13 +59,6 @@ public class CombatManager : MonoBehaviour
         enemyCounts = 0;
         registeredActors.Clear();
         turnOrder.Clear();
-    }
-
-    void SpawnBattleTerrain()
-    {
-        BattleTerrainSetting battleTerrainSetting = LevelConstructionInfoBuffer.Instance.battleTerrainSettingInfo;
-        battleTerrain = battleTerrainSetting.GetBattleTerrain();
-        Instantiate(battleTerrain, battleTerrainSetting.GetTerrainSpawnPoint(), quaternion.identity);
     }
     
     void SpawnTurnBasedActors()
