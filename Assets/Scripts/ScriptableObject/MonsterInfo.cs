@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "NewMonsterStatistic", menuName = "ScriptableObjects/NewMonsterStatistic", order = 1)]
-public class MonsterInfo : TurnBasedActorInfo
+public class MonsterInfo : ScriptableObject
 {
     [Header("The Evolution Chain This Monster Belongs To")]
     [SerializeField] private EvolutionChain evolutionChain;
@@ -42,5 +42,5 @@ public class MonsterInfo : TurnBasedActorInfo
     public float GetSpeedAtLv(int lv) => baseSpeed + Mathf.Pow(GetLevelRatio(lv),speedGrowthRate);
     private float GetLevelRatio(int lv) => lv > 1 ? Mathf.Sqrt(lv) + 1 : 1;
 
-    public override TurnBasedActor GetTurnBasedActorPrefab() => monsterPrefab;
+    public TurnBasedActor GetTurnBasedActorPrefab() => monsterPrefab;
 }
