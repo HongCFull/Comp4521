@@ -13,9 +13,9 @@ public class MonsterController : MonoBehaviour
    /// Set to false by default. Call EnablePlayerControl to enable the player control
    /// </summary>
    [HideInInspector] public bool enablePlayerControl = false;
-   [HideInInspector] public Monster monster;
 
    private const float RayCastDistance = 200f;
+   private Monster controlledMonster;
    private Camera mainCamera;
    private NavMeshAgent navMeshAgent;
    private NavMeshPath path;
@@ -24,10 +24,11 @@ public class MonsterController : MonoBehaviour
    private bool isAskingPlayerInput = false;
    private bool gotAvailableGridPos = false;
    
-   private void Awake() {
+   private void Start() {
       path = new NavMeshPath();
       
-      navMeshAgent = gameObject.GetComponent<NavMeshAgent>();
+      navMeshAgent = GetComponent<NavMeshAgent>();
+      controlledMonster = GetComponent<Monster>();
       mainCamera = Camera.main;
    }
 
@@ -48,11 +49,14 @@ public class MonsterController : MonoBehaviour
          yield return StartCoroutine(AskForPlayerMovementInput());   //async operation
       }
 
-      //Get the player/AI input
+      ReRollGridMoveSetAtCurrentGrid();
+      
       yield return StartCoroutine(MoveToPositionCoroutine(gridPosition));
       while (!HasReachedPosition(gridPosition)) {
          yield return null;
       }
+      
+      PerformMoveSetAtCurrentGrid();
       ResetMonsterControllerState();
    }
 
@@ -65,8 +69,8 @@ public class MonsterController : MonoBehaviour
       Vector3 direction = mainCamera.transform.rotation * Vector3.forward * 100f;
       Ray ray = new Ray(screenToWorldPoint, RayCastDistance * direction);
       RaycastHit hit;
-      Vector3 worldPos = Vector3.zero;
-      //Debug.DrawRay(ray.origin, RayCastDistance * ray.direction, Color.cyan, 3f);
+      Vector3 gridCenter = Vector3.zero;
+      Debug.DrawRay(ray.origin, RayCastDistance * ray.direction, Color.cyan, 3f);
 
       bool hitSomeThing = Physics.Raycast(ray, out hit, RayCastDistance);
       if (!hitSomeThing) {
@@ -77,11 +81,11 @@ public class MonsterController : MonoBehaviour
       GameObject objectHit = hit.transform.gameObject;
       //Debug.Log("ray cast object name = "+objectHit +" with pos = "+objectHit.transform.position);
       if (objectHit.layer.Equals(LayerMask.NameToLayer("TurnBasedGrid"))) {
-         worldPos = CombatManager.Instance.battleTerrain.GetWalkableGridCenterByWorldPos(objectHit.transform.position);
+         gridCenter = CombatManager.Instance.battleTerrain.GetWalkableGridCenterByWorldPos(objectHit.transform.position);
       }
 
-      if (IsValidGrid(worldPos)) {
-         gridPosition = worldPos;
+      if (IsValidGrid(gridCenter)) {
+         gridPosition = gridCenter;
          gotAvailableGridPos = true;
       }
    }
@@ -100,11 +104,29 @@ public class MonsterController : MonoBehaviour
       }
    }
    
+   private bool IsValidGrid(Vector3 worldPos)
+   {
+      int movementRange = controlledMonster.GetMonsterMovementRange();
+      GridCoordinate targetCoord = CombatManager.Instance.battleTerrain.GetGridCoordByWorldPos(worldPos);
+      GridCoordinate currentCoord = CombatManager.Instance.battleTerrain.GetGridCoordByWorldPos(gameObject.transform.position);
+      //Debug.Log("row col = "+targetCoord);
+
+      int manhattanDist = Mathf.Abs(currentCoord.row - targetCoord.row) +
+                          Mathf.Abs(currentCoord.col - targetCoord.col);
+      if (manhattanDist > movementRange)
+         return false;
+
+      if (CombatManager.Instance.battleTerrain.gridMoveSets[targetCoord.row, targetCoord.col] == GridMoveSet.Obstacle)
+         return false;
+
+      return true;
+   }
+   
    IEnumerator MoveToPositionCoroutine(Vector3 position)
    {
       //Debug.Log("Moving to "+position);
       if (!PositionIsReachable(position)) {
-         //Debug.Log("Pos not reachable!");
+         Debug.Log("Pos "+position+" is not reachable!");
          yield break;
       }
       
@@ -114,7 +136,22 @@ public class MonsterController : MonoBehaviour
       }
    }
 
-   private bool PositionIsReachable(Vector3 position)
+   void ReRollGridMoveSetAtCurrentGrid()
+   {
+      BattleTerrain battleTerrain = CombatManager.Instance.battleTerrain;
+      GridCoordinate coord = battleTerrain.GetGridCoordByWorldPos(transform.position);
+      CombatManager.Instance.battleTerrain.ReRollMoveSetAtGrid(coord);
+   }
+
+   void PerformMoveSetAtCurrentGrid()
+   {
+      BattleTerrain battleTerrain = CombatManager.Instance.battleTerrain;
+      GridCoordinate coord = battleTerrain.GetGridCoordByWorldPos(transform.position);
+      GridMoveSet moveSet = CombatManager.Instance.battleTerrain.PopMoveSetAtGrid(coord);
+      controlledMonster.PerformMoveSet(moveSet);
+   }
+
+   bool PositionIsReachable(Vector3 position)
    {
       navMeshAgent.CalculatePath(position, path);
       if (path.status == NavMeshPathStatus.PathPartial ||
@@ -124,11 +161,7 @@ public class MonsterController : MonoBehaviour
    }
    
    private bool HasReachedPosition(Vector3 position,float tolerance = 0.5f) => (transform.position - position).magnitude < tolerance;
-   private bool HasReachedPosition(Transform destTransform,float tolerance = 0.5f) => (transform.position - destTransform.position).magnitude < tolerance;
-
-   private bool IsValidGrid(Vector3 worldPos) => true;
    
-
    private void ResetMonsterControllerState()
    {
       isAskingPlayerInput = false;
@@ -136,7 +169,7 @@ public class MonsterController : MonoBehaviour
    }
    
 //NOTE: For Development Testing Only   
-   public Vector3 GetRandomReachablePosition(float walkRadius)
+   Vector3 GetRandomReachablePosition(float walkRadius)
    {
       Vector3 randomPosition = transform.position;
       randomPosition.x += Random.insideUnitCircle.x*walkRadius;

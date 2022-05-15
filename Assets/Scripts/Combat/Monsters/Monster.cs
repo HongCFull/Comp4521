@@ -19,8 +19,6 @@ public class Monster : TurnBasedActor, IClickable
 
     protected virtual void Awake()
     {
-        monsterController.monster = this;
-        
         //TODO: Update the battle attribute of this instance according to the level
         UpdateTurnBasedActorSpeed(speed);
         animator = GetComponent<Animator>();
@@ -61,11 +59,41 @@ public class Monster : TurnBasedActor, IClickable
     }
     
     public override void OnActorTurnEnd()
-    {
-    }
+    { }
 
     public MonsterController GetMonsterController() => monsterController;
-    
+
+    public int GetMonsterMovementRange() => monsterInfo.MovementRange;
+
+    public void PerformMoveSet(GridMoveSet moveSet)
+    {
+        switch (moveSet)
+        {
+            case GridMoveSet.SkillA:
+                Debug.Log("Performing SkillA");
+                break;
+            
+            case GridMoveSet.SkillB:
+                Debug.Log("Performing SkillB");
+                break;
+            
+            case GridMoveSet.SkillC:
+                Debug.Log("Performing SkillC");
+                break;
+            
+            case GridMoveSet.SkillD:
+                Debug.Log("Performing SkillD");
+                break;
+            
+            case GridMoveSet.Defense:
+                Debug.Log("Performing Defense");
+                break;
+            
+            case GridMoveSet.Heal:
+                Debug.Log("Performing Heal");
+                break;
+        }
+    }
     
 //=================================================================================================================
 //Protected Methods
