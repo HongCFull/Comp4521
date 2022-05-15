@@ -75,7 +75,7 @@ public class MonsterController : MonoBehaviour
       }
 
       GameObject objectHit = hit.transform.gameObject;
-      Debug.Log("ray cast object name = "+objectHit +" with pos = "+objectHit.transform.position);
+      //Debug.Log("ray cast object name = "+objectHit +" with pos = "+objectHit.transform.position);
       if (objectHit.layer.Equals(LayerMask.NameToLayer("TurnBasedGrid"))) {
          worldPos = CombatManager.Instance.battleTerrain.GetWalkableGridCenterByWorldPos(objectHit.transform.position);
       }
@@ -102,9 +102,9 @@ public class MonsterController : MonoBehaviour
    
    IEnumerator MoveToPositionCoroutine(Vector3 position)
    {
-      Debug.Log("Moving to "+position);
+      //Debug.Log("Moving to "+position);
       if (!PositionIsReachable(position)) {
-         Debug.Log("Pos not reachable!");
+         //Debug.Log("Pos not reachable!");
          yield break;
       }
       

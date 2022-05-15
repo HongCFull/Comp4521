@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -17,6 +18,7 @@ public enum GridInfo
     PickUp,
     Obstacle
 }
+
 
 [System.Serializable]
 [Tooltip("Row Col = 0,0 at the top left corner")]
@@ -56,7 +58,6 @@ public class BattleTerrain : MonoBehaviour
         stretchedGridInfo = new GridInfo[height * width];
 
         cellWidth = gridInfo.cellSize.x;
-        Debug.Log("gridinfo cell size z = "+gridInfo.cellSize.z);
         cellHeight = gridInfo.cellSize.z;
         
         RandomizeGridInfo();
@@ -64,14 +65,15 @@ public class BattleTerrain : MonoBehaviour
     }
 
     /// <summary>
-    /// Return a tuple of row index and the column index 
+    /// Get the Grid world center position at the surface
     /// </summary>
-    public Tuple<int, int> GetGridIndexByWorldPos(Vector3 pos)
+    public Vector3 GetGridCenterPosByCoordinate(TileCoordinate coordinate)
     {
-        int rowIndex = (int) Math.Round((pos.z - topLeftTilePivot.position.z) / cellHeight);
-        int colIndex = (int) Math.Round((pos.x - topLeftTilePivot.position.x) / cellWidth);
-        //Debug.Log("Get ：" +rowIndex+","+colIndex);
-        return new Tuple<int, int>(rowIndex, colIndex);
+        NavMeshHit hit;
+        Vector3 gridCenter=new Vector3(topLeftTilePivot.position.x + coordinate.col * cellWidth,
+            topLeftTilePivot.position.y + cellWidth / 2, topLeftTilePivot.position.z - coordinate.row * cellHeight);
+        NavMesh.SamplePosition(gridCenter, out hit, 5f,1);
+        return hit.position;
     }
 
     public Vector3 GetWalkableGridCenterByWorldPos(Vector3 pos)
@@ -79,13 +81,23 @@ public class BattleTerrain : MonoBehaviour
         Tuple<int, int> closestGridIndex = GetGridIndexByWorldPos(pos);
         NavMeshHit hit;
         Vector3 gridCenter = new Vector3(topLeftTilePivot.position.x + closestGridIndex.Item2 * cellWidth, pos.y, topLeftTilePivot.position.z+closestGridIndex.Item1 * cellHeight);
-        //return gridCenter;
         //Debug.Log("Grid center = "+gridCenter);
         NavMesh.SamplePosition(gridCenter, out hit, 5f,1);
         //Debug.Log("Hit position " +hit.position);
         return hit.position;
     }
-
+    
+    
+    /// <summary>
+    /// Return a tuple of row index and the column index 
+    /// </summary>
+    Tuple<int, int> GetGridIndexByWorldPos(Vector3 pos)
+    {
+        int rowIndex = (int) Math.Round((pos.z - topLeftTilePivot.position.z) / cellHeight);
+        int colIndex = (int) Math.Round((pos.x - topLeftTilePivot.position.x) / cellWidth);
+        //Debug.Log("Get ：" +rowIndex+","+colIndex);
+        return new Tuple<int, int>(rowIndex, colIndex);
+    }
     void AssignInitialObstacle()
     {
         foreach (TileCoordinate coord in initObstacles) {
@@ -93,7 +105,7 @@ public class BattleTerrain : MonoBehaviour
         }
     }
 
-    private void RandomizeGridInfo()
+    void RandomizeGridInfo()
     {
         InitStretchedGridInfo();
         RandomizeStretchedGridInfo();
@@ -137,7 +149,7 @@ public class BattleTerrain : MonoBehaviour
             }
         }
     }
-    private void RandomizeStretchedGridInfo() {
+    void RandomizeStretchedGridInfo() {
         var rng = new System.Random();
         rng.Shuffle(stretchedGridInfo);
     }

@@ -6,28 +6,30 @@ using UnityEngine;
 using UnityEngine.Events;
 using Random = UnityEngine.Random;
 
+
 public class LevelConstructionInfoSender : MonoBehaviour
 {
-    [SerializeField] private List<TurnBasedActorSpawningSetting> enemyActorSpawningInfos;
-    [SerializeField] private List<EvolutionChain> userMonsterChain;
+    [SerializeField] private LevelSetting levelSetting;
+    [SerializeField] private List<UserMonsterSpawnSetting> userMonsterSpawnSettings;
     [SerializeField] private UnityEvent OnFinishSending;
     
     [ContextMenu("Send LV info to buffer")]
     public void SendLevelConstructionInfoToBuffer()
     {
-        LevelConstructionInfoBuffer.Instance.AddActorSpawningInfo(enemyActorSpawningInfos);
-        
+        LevelConstructionInfoBuffer.Instance.AddActorSpawningInfo(levelSetting.GetMonsterSpawningInfos());
         SendUserMonsterSpawningInfoToBuffer();
         OnFinishSending.Invoke();
     }
 
     private void SendUserMonsterSpawningInfoToBuffer()
     {
-        foreach (EvolutionChain evolutionChain in userMonsterChain) {
-            MonsterInfo monsterInfo = evolutionChain.GetMonsterInfoAtCurrentStage();
-            Vector3 spawnPos = new Vector3(Random.Range(0, 10f), 0, Random.Range(0, 10f));
-            TurnBasedActorSpawningSetting setting =TurnBasedActorSpawningSetting.ConstructTurnBasedActorSpawningSetting(
-                TurnBasedActorType.FriendlyMonster, monsterInfo, spawnPos, evolutionChain.MonsterLevel);
+        foreach (UserMonsterSpawnSetting spawnSetting in userMonsterSpawnSettings)
+        {
+            EvolutionChain monsterEvolutionChain = spawnSetting.monsterEvolutionChain;
+            MonsterInfo monsterInfo = monsterEvolutionChain.GetMonsterInfoAtCurrentStage();
+            
+            TurnBasedActorSpawningSetting setting = TurnBasedActorSpawningSetting.ConstructTurnBasedActorSpawningSetting
+            (TurnBasedActorType.FriendlyMonster, monsterInfo.GetTurnBasedActorPrefab(), spawnSetting.spawningCoord,spawnSetting.orientationSetting , monsterEvolutionChain.MonsterLevel);
             
             LevelConstructionInfoBuffer.Instance.AddActorSpawningInfo(setting);
         }
