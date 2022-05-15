@@ -9,6 +9,7 @@ public struct TurnBasedActorSpawningSetting
     public TurnBasedActorType turnBasedActorType;
     public TurnBasedActor turnBasedActor;
     public TileCoordinate coordToSpawn;
+    public OrientationSetting orientationSetting;
     
     [Tooltip("For Monster Actor Only. Ignore it for non monster actor")]
     public int monsterLv;   //For Monster Only
@@ -17,12 +18,13 @@ public struct TurnBasedActorSpawningSetting
     /// Construct and return a new spawning setting according to the input   
     /// </summary>
     public static TurnBasedActorSpawningSetting ConstructTurnBasedActorSpawningSetting
-    (TurnBasedActorType turnBasedActorType,TurnBasedActor turnBasedActor, TileCoordinate tileCoord, int monsterLv=0)
+    (TurnBasedActorType turnBasedActorType,TurnBasedActor turnBasedActor, TileCoordinate tileCoord,OrientationSetting orientation, int monsterLv=0)
     {
         TurnBasedActorSpawningSetting setting = new TurnBasedActorSpawningSetting();
         setting.turnBasedActorType = turnBasedActorType;
         setting.turnBasedActor = turnBasedActor;
         setting.coordToSpawn = tileCoord;
+        setting.orientationSetting = orientation;
         setting.monsterLv = monsterLv;
         return setting;
     }
@@ -34,5 +36,36 @@ public struct UserMonsterSpawnSetting
 {
     public EvolutionChain monsterEvolutionChain;
     public TileCoordinate spawningCoord;
+    public OrientationSetting orientationSetting;
+
 }
 
+
+[Serializable]
+public struct OrientationSetting
+{
+    public enum Orientation
+    {
+        PositiveX,
+        PositiveZ,
+        NegativeX,
+        NegativeZ
+    }
+
+    public Orientation orientation;
+    public Quaternion GetLookAtRotationByOrientation()
+    {
+        switch (orientation)
+        {
+            case Orientation.PositiveX:
+                return Quaternion.LookRotation(Vector3.right);
+            case Orientation.PositiveZ:
+                return Quaternion.LookRotation(Vector3.forward);
+            case Orientation.NegativeX:
+                return Quaternion.LookRotation(Vector3.left);
+            case Orientation.NegativeZ:
+                return Quaternion.LookRotation(Vector3.back);
+        }
+        return Quaternion.LookRotation(Vector3.forward);
+    }
+}

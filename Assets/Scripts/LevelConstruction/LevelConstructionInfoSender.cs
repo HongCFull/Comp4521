@@ -29,7 +29,7 @@ public class LevelConstructionInfoSender : MonoBehaviour
             MonsterInfo monsterInfo = monsterEvolutionChain.GetMonsterInfoAtCurrentStage();
             
             TurnBasedActorSpawningSetting setting = TurnBasedActorSpawningSetting.ConstructTurnBasedActorSpawningSetting
-            (TurnBasedActorType.FriendlyMonster, monsterInfo.GetTurnBasedActorPrefab(), spawnSetting.spawningCoord, monsterEvolutionChain.MonsterLevel);
+            (TurnBasedActorType.FriendlyMonster, monsterInfo.GetTurnBasedActorPrefab(), spawnSetting.spawningCoord,spawnSetting.orientationSetting , monsterEvolutionChain.MonsterLevel);
             
             LevelConstructionInfoBuffer.Instance.AddActorSpawningInfo(setting);
         }

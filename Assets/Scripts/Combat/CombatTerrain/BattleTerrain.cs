@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -17,6 +18,7 @@ public enum GridInfo
     PickUp,
     Obstacle
 }
+
 
 [System.Serializable]
 [Tooltip("Row Col = 0,0 at the top left corner")]
@@ -85,7 +87,7 @@ public class BattleTerrain : MonoBehaviour
         return hit.position;
     }
     
-
+    
     /// <summary>
     /// Return a tuple of row index and the column index 
     /// </summary>

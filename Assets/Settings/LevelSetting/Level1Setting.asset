@@ -20,10 +20,14 @@ MonoBehaviour:
     coordToSpawn:
       row: 4
       col: 4
+    orientationSetting:
+      orientation: 3
     monsterLv: 1
   - turnBasedActorType: 1
     turnBasedActor: {fileID: 536077985675614646, guid: 800223cdaf0ab6e4f9886948688db045, type: 3}
     coordToSpawn:
       row: 4
       col: 6
+    orientationSetting:
+      orientation: 3
     monsterLv: 1

@@ -67,7 +67,8 @@ public class CombatManager : MonoBehaviour
         foreach (TurnBasedActorSpawningSetting actorSpawningInfo in actorSpawningInfos)
         {
             Vector3 spawnPos = battleTerrain.GetGridCenterPosByCoordinate(actorSpawningInfo.coordToSpawn);
-            TurnBasedActor turnBasedActor = Instantiate(actorSpawningInfo.turnBasedActor,spawnPos,quaternion.identity);
+            Quaternion lookRotation = actorSpawningInfo.orientationSetting.GetLookAtRotationByOrientation();
+            TurnBasedActor turnBasedActor = Instantiate(actorSpawningInfo.turnBasedActor,spawnPos,lookRotation);
             turnBasedActor.turnBasedActorType = actorSpawningInfo.turnBasedActorType;
             
             RegisterNewTurnBasedActor(turnBasedActor);
