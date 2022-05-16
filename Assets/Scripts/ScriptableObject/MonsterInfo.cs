@@ -28,12 +28,16 @@ public class MonsterInfo : ScriptableObject
     [Header("Speed Category")]
     [SerializeField] private float baseSpeed;
     [SerializeField] private float speedGrowthRate;
-    [SerializeField] private int movementRange;
     
+    [Header("Range Category")]
+    [SerializeField] private int movementRange;
+    [SerializeField] private int meleeAttackRange;
+    [SerializeField] private int longRangeAttackRange;
+    [SerializeField] private int specialSkillRange;
+
     public bool IsUnlocked => isUnlocked;
     public ElementType ElementType => elementType;
     public int MovementRange => movementRange;
-    
 
 //TODO: GameBalance, for prototyping only:
     public float GetHealthPointAtLv(int lv) => baseHealthPoint + Mathf.Pow(GetLevelRatio(lv),hpGrowthRate);

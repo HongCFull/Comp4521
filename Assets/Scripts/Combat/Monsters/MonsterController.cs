@@ -9,9 +9,7 @@ using Random = UnityEngine.Random;
 [RequireComponent(typeof(NavMeshAgent))]
 public class MonsterController : MonoBehaviour
 {
-   /// <summary>
-   /// Set to false by default. Call EnablePlayerControl to enable the player control
-   /// </summary>
+   // Set to false by default. Call EnablePlayerControl to enable the player control
    [HideInInspector] public bool enablePlayerControl = false;
 
    private const float RayCastDistance = 200f;
@@ -49,14 +47,18 @@ public class MonsterController : MonoBehaviour
          yield return StartCoroutine(AskForPlayerMovementInput());   //async operation
       }
 
-      ReRollGridMoveSetAtCurrentGrid();
+      GridCoordinate currentCoord= GetCurrentGridCoord();
+      CombatManager.Instance.battleTerrain.UnregisterActorOnGrid(controlledMonster,currentCoord);
+      ReRollGridMoveSetAtCurrentGrid(currentCoord);
       
       yield return StartCoroutine(MoveToPositionCoroutine(gridPosition));
       while (!HasReachedPosition(gridPosition)) {
          yield return null;
       }
-      
-      PerformMoveSetAtCurrentGrid();
+
+      currentCoord = GetCurrentGridCoord();
+      CombatManager.Instance.battleTerrain.RegisterTurnBasedActorOnGrid(controlledMonster,currentCoord);
+      PerformMoveSetAtCurrentGrid(currentCoord);
       ResetMonsterControllerState();
    }
 
@@ -109,7 +111,6 @@ public class MonsterController : MonoBehaviour
       int movementRange = controlledMonster.GetMonsterMovementRange();
       GridCoordinate targetCoord = CombatManager.Instance.battleTerrain.GetGridCoordByWorldPos(worldPos);
       GridCoordinate currentCoord = CombatManager.Instance.battleTerrain.GetGridCoordByWorldPos(gameObject.transform.position);
-      //Debug.Log("row col = "+targetCoord);
 
       int manhattanDist = Mathf.Abs(currentCoord.row - targetCoord.row) +
                           Mathf.Abs(currentCoord.col - targetCoord.col);
@@ -136,19 +137,18 @@ public class MonsterController : MonoBehaviour
       }
    }
 
-   void ReRollGridMoveSetAtCurrentGrid()
-   {
-      BattleTerrain battleTerrain = CombatManager.Instance.battleTerrain;
-      GridCoordinate coord = battleTerrain.GetGridCoordByWorldPos(transform.position);
-      CombatManager.Instance.battleTerrain.ReRollMoveSetAtGrid(coord);
-   }
+   void ReRollGridMoveSetAtCurrentGrid(GridCoordinate coord) =>CombatManager.Instance.battleTerrain.ReRollMoveSetAtGrid(coord);
 
-   void PerformMoveSetAtCurrentGrid()
+   void PerformMoveSetAtCurrentGrid(GridCoordinate coord)
    {
-      BattleTerrain battleTerrain = CombatManager.Instance.battleTerrain;
-      GridCoordinate coord = battleTerrain.GetGridCoordByWorldPos(transform.position);
       GridMoveSet moveSet = CombatManager.Instance.battleTerrain.PopMoveSetAtGrid(coord);
       controlledMonster.PerformMoveSet(moveSet);
+   }
+
+   GridCoordinate GetCurrentGridCoord()
+   {
+      BattleTerrain battleTerrain = CombatManager.Instance.battleTerrain;
+      return battleTerrain.GetGridCoordByWorldPos(transform.position);
    }
 
    bool PositionIsReachable(Vector3 position)

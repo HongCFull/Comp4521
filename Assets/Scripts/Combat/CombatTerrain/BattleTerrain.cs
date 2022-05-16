@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data.Common.CommandTrees.ExpressionBuilder;
 using Unity.Mathematics;
 using UnityEditor;
+using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.AI;
@@ -14,10 +15,10 @@ public enum GridMoveSet
     /// Obstacle has to be the LAST value!
     /// </summary>
     
-    SkillA,
-    SkillB,
-    SkillC,
-    SkillD,
+    MeleeAttack,
+    LongRangeAttack,
+    SpecialSkill,
+    UltimateSkill,
     Defense,
     Heal,
     PickUp,
@@ -26,7 +27,7 @@ public enum GridMoveSet
 
 [System.Serializable]
 [Tooltip("Row Col = 0,0 at the top left corner")]
-public struct GridCoordinate
+public struct GridCoordinate : IEquatable<GridCoordinate>
 {
     public int row;
     public int col;
@@ -35,6 +36,19 @@ public struct GridCoordinate
     {
         this.row = row;
         this.col = col;
+    }
+    public override bool Equals(object obj) => obj is GridCoordinate other && Equals(other);
+
+    public bool Equals(GridCoordinate other) => other.row == this.row && other.col == this.col;
+    
+    public override string ToString() => string.Format("row = {0}, col = {1}",row,col);
+
+    public override int GetHashCode()
+    {
+        HashCode hashCode = new HashCode();
+        hashCode.Add(row);
+        hashCode.Add(col);
+        return hashCode.ToHashCode();
     }
 }
 
@@ -58,7 +72,8 @@ public class BattleTerrain : MonoBehaviour
     [SerializeField] private int healWeight;
 
     public GridMoveSet[,] gridMoveSets { get; private set; }
-    
+    public Dictionary<GridCoordinate, TurnBasedActor> turnBasedActorCoord;
+
     private GridMoveSet[] stretchedGridMoveSets;
     private float cellWidth;
     private float cellHeight;
@@ -67,7 +82,8 @@ public class BattleTerrain : MonoBehaviour
     {
         gridMoveSets = new GridMoveSet[height,width];
         stretchedGridMoveSets = new GridMoveSet[height * width];
-
+        turnBasedActorCoord = new Dictionary<GridCoordinate, TurnBasedActor>();
+        
         cellWidth = gridInfo.cellSize.x;
         cellHeight = gridInfo.cellSize.z;
         
@@ -112,6 +128,26 @@ public class BattleTerrain : MonoBehaviour
         return new GridCoordinate(rowIndex, colIndex);
     }
 
+    public void RegisterTurnBasedActorOnGrid(TurnBasedActor actor, GridCoordinate coordinate)
+    {
+        if (turnBasedActorCoord.ContainsKey(coordinate)) {
+            Debug.Log("coordinate: "+coordinate+" is occupied by actor: " + turnBasedActorCoord[coordinate].gameObject.name);
+            return;
+        }
+        turnBasedActorCoord.Add(coordinate,actor);
+        Debug.Log("Save actor : "+actor.gameObject.name+" in coord "+coordinate);
+    }
+    
+    public void UnregisterActorOnGrid(TurnBasedActor actor, GridCoordinate coordinate)
+    {
+        if (!turnBasedActorCoord.ContainsKey(coordinate)) {
+            Debug.Log("coordinate: "+coordinate+" is empty, cant unregister actor on it");
+            return;
+        }
+        turnBasedActorCoord.Remove(coordinate);
+        Debug.Log("Unregistered actor : "+actor.gameObject.name+" in coord "+coordinate);
+    }
+    
     void AssignInitialObstacle()
     {
         foreach (GridCoordinate coord in initObstacles) {
@@ -142,16 +178,16 @@ public class BattleTerrain : MonoBehaviour
 
         for (int i = 0; i < height * width; i++) {
             if (numOfSkillA > 0) {
-                stretchedGridMoveSets[i] = GridMoveSet.SkillA;
+                stretchedGridMoveSets[i] = GridMoveSet.MeleeAttack;
                 numOfSkillA--;
             }else if (numOfSkillB > 0) {
-                stretchedGridMoveSets[i] = GridMoveSet.SkillB;
+                stretchedGridMoveSets[i] = GridMoveSet.LongRangeAttack;
                 numOfSkillB--;
             }else if (numOfSkillC > 0) {
-                stretchedGridMoveSets[i] = GridMoveSet.SkillC;
+                stretchedGridMoveSets[i] = GridMoveSet.SpecialSkill;
                 numOfSkillC--;
             }else if (numOfSkillD > 0) {
-                stretchedGridMoveSets[i] = GridMoveSet.SkillD;
+                stretchedGridMoveSets[i] = GridMoveSet.UltimateSkill;
                 numOfSkillD--;
             }else if (numOfDefense > 0) {
                 stretchedGridMoveSets[i] = GridMoveSet.Defense;
@@ -160,7 +196,7 @@ public class BattleTerrain : MonoBehaviour
                 stretchedGridMoveSets[i] = GridMoveSet.Heal;
                 numOfHeal--;
             }else {
-                stretchedGridMoveSets[i] = GridMoveSet.SkillA;
+                stretchedGridMoveSets[i] = GridMoveSet.MeleeAttack;
             }
         }
     }

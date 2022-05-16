@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,7 +6,7 @@ using UnityEngine.Serialization;
 
 
 [RequireComponent(typeof(MonsterController))]
-public class Monster : TurnBasedActor, IClickable
+public class Monster : TurnBasedActor, IClickable, IDamageable
 {
     [SerializeField] private MonsterInfo monsterInfo;
     public MonsterController monsterController;
@@ -61,6 +62,19 @@ public class Monster : TurnBasedActor, IClickable
     public override void OnActorTurnEnd()
     { }
 
+    public void OnDamageTaken(int damage)
+    {
+        currentHP -= damage;
+        if (currentHP <= 0) {
+            OnDeath();
+        }
+    }
+
+    public void OnDeath()
+    {
+        throw new NotImplementedException();
+    }
+
     public MonsterController GetMonsterController() => monsterController;
 
     public int GetMonsterMovementRange() => monsterInfo.MovementRange;
@@ -69,19 +83,19 @@ public class Monster : TurnBasedActor, IClickable
     {
         switch (moveSet)
         {
-            case GridMoveSet.SkillA:
+            case GridMoveSet.MeleeAttack:
                 Debug.Log("Performing SkillA");
                 break;
             
-            case GridMoveSet.SkillB:
+            case GridMoveSet.LongRangeAttack:
                 Debug.Log("Performing SkillB");
                 break;
             
-            case GridMoveSet.SkillC:
+            case GridMoveSet.SpecialSkill:
                 Debug.Log("Performing SkillC");
                 break;
             
-            case GridMoveSet.SkillD:
+            case GridMoveSet.UltimateSkill:
                 Debug.Log("Performing SkillD");
                 break;
             
