@@ -9,6 +9,7 @@ public class MonsterInfo : ScriptableObject
     [SerializeField] private EvolutionChain evolutionChain;
     [SerializeField] private bool isUnlocked;
     [SerializeField] private Monster monsterPrefab;
+    [SerializeField] private Sprite monsterPreviewImage;
 
     [Header("ElementType")]
     [SerializeField] private ElementType elementType;
@@ -43,4 +44,6 @@ public class MonsterInfo : ScriptableObject
     private float GetLevelRatio(int lv) => lv > 1 ? Mathf.Sqrt(lv) + 1 : 1;
 
     public TurnBasedActor GetTurnBasedActorPrefab() => monsterPrefab;
+
+    public Sprite GetPreviewImage() => monsterPreviewImage;
 }
