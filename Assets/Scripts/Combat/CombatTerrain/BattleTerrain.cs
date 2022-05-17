@@ -21,19 +21,20 @@ public struct GridCoordinate : IEquatable<GridCoordinate>
         this.row = row;
         this.col = col;
     }
-    public override bool Equals(object obj) => obj is GridCoordinate other && Equals(other);
+    public override bool Equals(object obj) {
+        if(obj is GridCoordinate){
+            GridCoordinate other = (GridCoordinate) obj;
+            return (other.row==this.row) && (other.col == this.col);
+        }
+        return false;
+    }
 
-    public bool Equals(GridCoordinate other) => other.row == this.row && other.col == this.col;
+    public bool Equals(GridCoordinate other) => (other.row == this.row) && (other.col == this.col);
     
     public override string ToString() => string.Format("row = {0}, col = {1}",row,col);
 
-    public override int GetHashCode()
-    {
-        HashCode hashCode = new HashCode();
-        hashCode.Add(row);
-        hashCode.Add(col);
-        return hashCode.ToHashCode();
-    }
+    public override int GetHashCode() => row ^ col;
+
 }
 
 public class BattleTerrain : MonoBehaviour
@@ -159,8 +160,10 @@ public class BattleTerrain : MonoBehaviour
     }
 
     public void HighlightGridsInRange(GridCoordinate center, int range){
-        //Debug.Log("BFS at "+center);
-        UpdateGridsToHighlightByBFS(center, 0, range);
+        Debug.Log("BFS at "+center);
+        gridsToHighlight.Clear();
+        //UpdateGridsToHighlightByBFS(center, range);
+        UpdateGridsToHighlightBruteForce(center,range);
         battleTerrainCanvas.HighlightGrids(gridsToHighlight);
     }
 
@@ -240,48 +243,101 @@ public class BattleTerrain : MonoBehaviour
         return values[new System.Random().Next(0,values.Length-2)]; //NO obstacles and pickup
     }
 
-    void UpdateGridsToHighlightByBFS(GridCoordinate start, int depth, int maxDepth){
-        if(depth>maxDepth)
-            return;
+    void UpdateGridsToHighlightBruteForce(GridCoordinate start,int range){
+        for(int rowOffset = -range; rowOffset <= range ; rowOffset++){
+            for(int colOffset = -range; colOffset<=range ; colOffset++){
+                
+                int rowIndex = start.row + rowOffset;
+                if(rowIndex < 0 || rowIndex >= numRow)
+                    break;
+                
+                int colIndex = start.col + colOffset;
+                if(colIndex <0 || colIndex >= numCol)
+                    continue;
 
-        if(gridsToHighlight.Contains(start))
-            return;
-        
-        gridsToHighlight.Add(start);
-
-        List<GridCoordinate> adjacentGrids = GetAdjacentGrid(start);
-
-        foreach(GridCoordinate neighbour in adjacentGrids){
-            if(gridsToHighlight.Contains(neighbour))
-                continue;
-
-            UpdateGridsToHighlightByBFS(neighbour, depth+1, maxDepth);
+                int manhattanDist = Mathf.Abs(rowIndex-start.row) + Mathf.Abs(colIndex-start.col);
+                if(manhattanDist<=range){
+                    GridCoordinate thisGrid = new GridCoordinate(rowIndex,colIndex);
+                    gridsToHighlight.Add(thisGrid);
+                } 
+            }
         }
-       
     }
 
-    List<GridCoordinate> GetAdjacentGrid(GridCoordinate currentGrid){
-        List<GridCoordinate> adjacentGrids = new List<GridCoordinate>();
-
-        int leftColIndex = currentGrid.col-1;
-        int rightColIndex = currentGrid.col+1;
-        int upRowIndex = currentGrid.row-1;
-        int downRowIndex = currentGrid.row+1;
-        
-        if(leftColIndex >= 0)
-            adjacentGrids.Add(new GridCoordinate(currentGrid.row , leftColIndex));
-        
-        if(rightColIndex < numCol)
-            adjacentGrids.Add(new GridCoordinate(currentGrid.row , rightColIndex));    
     
-        if(upRowIndex >= 0)
-            adjacentGrids.Add(new GridCoordinate(upRowIndex , currentGrid.col));
+
+    // void UpdateGridsToHighlightByBFS(GridCoordinate start, int maxDepth){
+      
+    //     int depth = 0;
+    //     int numOfObjToVisitInThisDepth=1; 
+    //     int numOfObjToVisitInNextDepth = 0;
+
+    //     Queue<GridCoordinate> gridsToVisit = new Queue<GridCoordinate>();
+    //     gridsToVisit.Enqueue(start);
+
+    //     while(gridsToVisit.Count!=0){            
+    //         GridCoordinate current = gridsToVisit.Dequeue();
+    //         gridsToHighlight.Add(current);
+    //         Debug.Log("added "+current);
+
+    //         List<GridCoordinate> adjacentGrids = GetNonVisitedAdjacentGrid(current);
+    //         foreach(var adj in adjacentGrids){
+    //             Debug.Log("adj = "+ adj);
+    //         }
+    //         Debug.Log("num of adjacentGrids : "+adjacentGrids.Count);
+    //         numOfObjToVisitInThisDepth--;
+    //         numOfObjToVisitInNextDepth += adjacentGrids.Count;
+
+    //         if(numOfObjToVisitInThisDepth == 0){
+    //             depth++;
+                
+    //             if(depth>maxDepth)
+    //                 return;
+    //             numOfObjToVisitInThisDepth = numOfObjToVisitInNextDepth;
+    //             numOfObjToVisitInNextDepth = 0;
+    //         }
+
+    //         foreach(GridCoordinate adj in adjacentGrids){
+    //             gridsToVisit.Enqueue(adj);
+    //             Debug.Log("queued "+adj);
+    //         }
+    //     }
+       
+    // }
+
+    // List<GridCoordinate> GetNonVisitedAdjacentGrid(GridCoordinate currentGrid){
+    //     List<GridCoordinate> adjacentGrids = new List<GridCoordinate>();
+
+    //     int leftColIndex = currentGrid.col-1;
+    //     int rightColIndex = currentGrid.col+1;
+    //     int upRowIndex = currentGrid.row-1;
+    //     int downRowIndex = currentGrid.row+1;
         
-        if(downRowIndex < numRow)
-            adjacentGrids.Add(new GridCoordinate(downRowIndex , currentGrid.col));    
-        
-        return adjacentGrids;
-    }
+    //     if(upRowIndex >= 0){
+    //         GridCoordinate newGrid = new GridCoordinate(upRowIndex , currentGrid.col);
+    //         if(!gridsToHighlight.Contains(newGrid))
+    //             gridsToHighlight.Add(newGrid);
+    //     }        
+    //     if(downRowIndex < numRow){
+    //         GridCoordinate newGrid = new GridCoordinate(downRowIndex , currentGrid.col);
+    //         if(!gridsToHighlight.Contains(newGrid))
+    //             gridsToHighlight.Add(newGrid);
+    //     }
+    
+    //     if(leftColIndex >= 0){
+    //         GridCoordinate newGrid = new GridCoordinate(currentGrid.row , leftColIndex);
+    //         if(!gridsToHighlight.Contains(newGrid))
+    //             gridsToHighlight.Add(newGrid);
+    //     }      
+
+    //     if(rightColIndex < numCol){
+    //         GridCoordinate newGrid = new GridCoordinate(currentGrid.row , rightColIndex);
+    //         if(!gridsToHighlight.Contains(newGrid))
+    //             gridsToHighlight.Add(newGrid);
+    //     }
+    
+    //     return adjacentGrids;
+    // }
 
 #if UNITY_EDITOR
     [ContextMenu("Show GridInfos")]

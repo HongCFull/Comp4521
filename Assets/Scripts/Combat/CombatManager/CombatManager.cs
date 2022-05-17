@@ -16,7 +16,6 @@ public class CombatManager : MonoBehaviour
     
     private List<TurnBasedActor> registeredActors;
     private Queue<TurnBasedActor> turnOrder;
-    private List<GridCoordinate> gridsToHighlight;
 
     private int allyCounts = 0;
     private int enemyCounts = 0;
@@ -31,8 +30,7 @@ public class CombatManager : MonoBehaviour
         
         registeredActors = new List<TurnBasedActor>();
         turnOrder = new Queue<TurnBasedActor>();
-        gridsToHighlight = new List<GridCoordinate>();
-        
+
         InitializeLevel();
     }
 

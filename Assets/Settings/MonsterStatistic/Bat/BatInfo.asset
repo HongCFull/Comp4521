@@ -25,4 +25,7 @@ MonoBehaviour:
   defenseGrowthRate: 4
   baseSpeed: 11
   speedGrowthRate: 4
-  movementRange: 5
+  movementRange: 3
+  meleeAttackRange: 0
+  longRangeAttackRange: 0
+  specialSkillRange: 0

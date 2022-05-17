@@ -43,10 +43,10 @@ public class MonsterController : MonoBehaviour
    {
       GridCoordinate currentCoord= GetCurrentGridCoord();
 
-      CombatManager.Instance.battleTerrain.HighlightGridsInRange(currentCoord, controlledMonster.movementRange);
       if (!enablePlayerControl) {
          AskForAIMovementInput();   //sync operation
       }else {
+         CombatManager.Instance.battleTerrain.HighlightGridsInRange(currentCoord, controlledMonster.movementRange);
          yield return StartCoroutine(AskForPlayerMovementInput());   //async operation
       }
 

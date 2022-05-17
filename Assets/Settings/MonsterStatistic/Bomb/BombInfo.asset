@@ -15,6 +15,7 @@ MonoBehaviour:
   evolutionChain: {fileID: 11400000, guid: 5bf207c62f7852447b5df1989d5b8c49, type: 2}
   isUnlocked: 0
   monsterPrefab: {fileID: 536077985675614646, guid: 800223cdaf0ab6e4f9886948688db045, type: 3}
+  monsterPreviewImage: {fileID: 0}
   elementType: 0
   baseHealthPoint: 50
   hpGrowthRate: 4
@@ -24,4 +25,7 @@ MonoBehaviour:
   defenseGrowthRate: 4
   baseSpeed: 6
   speedGrowthRate: 4
-  movementRange: 5
+  movementRange: 3
+  meleeAttackRange: 0
+  longRangeAttackRange: 0
+  specialSkillRange: 0

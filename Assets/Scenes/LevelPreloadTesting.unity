@@ -402,13 +402,13 @@ MonoBehaviour:
   userMonsterSpawnSettings:
   - monsterEvolutionChain: {fileID: 11400000, guid: dbae5081908e3c24a9526b3d8280eecd, type: 2}
     spawningCoord:
-      row: 6
+      row: 7
       col: 3
     orientationSetting:
       orientation: 1
   - monsterEvolutionChain: {fileID: 11400000, guid: f121f45024730324daed844ec469f420, type: 2}
     spawningCoord:
-      row: 6
+      row: 7
       col: 5
     orientationSetting:
       orientation: 1
