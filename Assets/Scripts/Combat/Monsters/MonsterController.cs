@@ -10,7 +10,7 @@ using Random = UnityEngine.Random;
 public class MonsterController : MonoBehaviour
 {
    // Set to false by default. Call EnablePlayerControl to enable the player control
-   [HideInInspector] public bool enablePlayerControl = false;
+   [HideInInspector] public bool enablePlayerControl {get;private set;} = false;
 
    private const float RayCastDistance = 200f;
    private Monster controlledMonster;
@@ -41,16 +41,19 @@ public class MonsterController : MonoBehaviour
 
    public IEnumerator ProcessMonsterMovementCoroutine()
    {
+      GridCoordinate currentCoord= GetCurrentGridCoord();
+
+      CombatManager.Instance.battleTerrain.HighlightGridsInRange(currentCoord, controlledMonster.movementRange);
       if (!enablePlayerControl) {
          AskForAIMovementInput();   //sync operation
       }else {
          yield return StartCoroutine(AskForPlayerMovementInput());   //async operation
       }
 
-      GridCoordinate currentCoord= GetCurrentGridCoord();
       CombatManager.Instance.battleTerrain.UnregisterActorOnGrid(controlledMonster,currentCoord);
-      ReRollGridMoveSetAtCurrentGrid(currentCoord);
-      
+      CombatManager.Instance.battleTerrain.ReRollMoveSetAtGrid(currentCoord);
+      CombatManager.Instance.battleTerrain.UnHighlightPreviousGrids();
+
       yield return StartCoroutine(MoveToPositionCoroutine(gridPosition));
       while (!HasReachedPosition(gridPosition)) {
          yield return null;
@@ -137,7 +140,6 @@ public class MonsterController : MonoBehaviour
       }
    }
 
-   void ReRollGridMoveSetAtCurrentGrid(GridCoordinate coord) =>CombatManager.Instance.battleTerrain.ReRollMoveSetAtGrid(coord);
 
    void PerformMoveSetAtCurrentGrid(GridCoordinate coord)
    {

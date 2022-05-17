@@ -16,6 +16,7 @@ public class CombatManager : MonoBehaviour
     
     private List<TurnBasedActor> registeredActors;
     private Queue<TurnBasedActor> turnOrder;
+    private List<GridCoordinate> gridsToHighlight;
 
     private int allyCounts = 0;
     private int enemyCounts = 0;
@@ -30,6 +31,8 @@ public class CombatManager : MonoBehaviour
         
         registeredActors = new List<TurnBasedActor>();
         turnOrder = new Queue<TurnBasedActor>();
+        gridsToHighlight = new List<GridCoordinate>();
+        
         InitializeLevel();
     }
 
@@ -131,9 +134,11 @@ public class CombatManager : MonoBehaviour
         float timer = 0f;
         while (!turnBasedActor.HasExecutedActions) {
             yield return null;
-            timer += Time.deltaTime;
-            if(timer>=ActionTimeLimit)
-                yield break;
+
+            //Enable if there is action time limit for each actor 
+            //timer += Time.deltaTime;
+            //if(timer>=ActionTimeLimit)
+            //    yield break;
         }
         turnBasedActor.OnActorTurnEnd();
     }

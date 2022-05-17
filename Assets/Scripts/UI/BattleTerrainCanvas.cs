@@ -11,9 +11,10 @@ public class BattleTerrainCanvas : MonoBehaviour
     [Tooltip("Indexed 0 at the top left corner, increased by col and then row")]
     [SerializeField] List<Image> tileImages;
 
-    [Tooltip("Default transparency of the tile iamge")]
-    [SerializeField] [Range(0,255)] int defaultTransaprency;
+    [SerializeField] Color gridHighlightColor;
+    [SerializeField] Color gridDefaultColor;
 
+    Color invisibleGridColor = new Color(1f,1f,1f,0f);
     private int numOfRows;
     private int numOfCols;
 
@@ -39,9 +40,9 @@ public class BattleTerrainCanvas : MonoBehaviour
         tileImages[coord.row*numOfCols + coord.col].sprite = sprite;
                 
             if(!sprite)
-                tileImages[coord.row*numOfCols + coord.col].color=new Color(1,1,1,0);
+                tileImages[coord.row*numOfCols + coord.col].color = invisibleGridColor;
             else
-                tileImages[coord.row*numOfCols + coord.col].color=new Color(1,1,1,defaultTransaprency/255f);
+                tileImages[coord.row*numOfCols + coord.col].color = gridDefaultColor;
     }
 
     public void UpdateMoveSetImageAtGridTo(int row, int col,MoveSetOnGrid.MoveSetType moveSetType)
@@ -50,9 +51,30 @@ public class BattleTerrainCanvas : MonoBehaviour
         tileImages[row*numOfCols + col].sprite = sprite;
                 
             if(!sprite)
-                tileImages[row*numOfCols + col].color=new Color(1,1,1,0);
+                tileImages[row*numOfCols + col].color = invisibleGridColor;
             else
-                tileImages[row*numOfCols + col].color=new Color(1,1,1,defaultTransaprency/255f);
+                tileImages[row*numOfCols + col].color = gridDefaultColor;
     }
     
+    public void HighlightGrids(List<GridCoordinate> grids)
+    {
+        foreach(GridCoordinate grid in grids){
+            if(!tileImages[grid.row*numOfCols + grid.col].sprite){
+                tileImages[grid.row*numOfCols + grid.col].color = invisibleGridColor;
+                continue;
+            }
+            tileImages[grid.row*numOfCols + grid.col].color = gridHighlightColor;
+        }
+    }
+
+    public void UnHighlightGrids(List<GridCoordinate> grids){
+        foreach(GridCoordinate grid in grids){
+            if(!tileImages[grid.row*numOfCols + grid.col].sprite){
+                tileImages[grid.row*numOfCols + grid.col].color = invisibleGridColor;
+                continue;
+            }
+            tileImages[grid.row*numOfCols + grid.col].color = gridDefaultColor;
+            
+        }
+    }
 }

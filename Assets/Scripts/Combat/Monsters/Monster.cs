@@ -11,12 +11,14 @@ public class Monster : TurnBasedActor, IClickable, IDamageable
     [SerializeField] private MonsterInfo monsterInfo;
     [SerializeField] MonsterController monsterController;
     
-    private float maxHp;
-    private float currentHP;
-    private float attack;
-    private float defense;
-    private float speed;
-    private int level;
+    public float maxHp {get; private set;}
+    public float currentHP {get; private set;}
+    public float attack {get; private set;}
+    public float defense {get; private set;}
+    public float speed {get; private set;}
+    public int movementRange {get; private set;}
+    public ElementType elementType {get; private set;}
+    public int level {get; private set;}
     private Animator animator;
 
     protected virtual void Awake()
@@ -46,10 +48,14 @@ public class Monster : TurnBasedActor, IClickable, IDamageable
     public void InitializeAttributesByLv(int lv)
     {
         maxHp = monsterInfo.GetHealthPointAtLv(lv);
+        currentHP = maxHp;
         attack = monsterInfo.GetAttackAtLv(lv);
         defense = monsterInfo.GetDefenseAtLv(lv);
         speed = monsterInfo.GetSpeedAtLv(lv);
-        currentHP = maxHp;
+
+        movementRange = monsterInfo.MovementRange;
+        elementType = monsterInfo.ElementType;
+
         UpdateTurnBasedActorSpeed(speed);
     }
 

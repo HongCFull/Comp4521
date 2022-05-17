@@ -62,6 +62,8 @@ public class BattleTerrain : MonoBehaviour
     public Dictionary<GridCoordinate, TurnBasedActor> turnBasedActorCoord;
 
     private MoveSetType[] stretchedGridMoveSets;
+    private List<GridCoordinate> gridsToHighlight;
+
     private float cellWidth;    //x
     private float cellHeight;   //y
     private float cellLength;   //z
@@ -71,7 +73,8 @@ public class BattleTerrain : MonoBehaviour
         gridMoveSets = new MoveSetType[numRow,numCol];
         stretchedGridMoveSets = new MoveSetType[numRow * numCol];
         turnBasedActorCoord = new Dictionary<GridCoordinate, TurnBasedActor>();
-        
+        gridsToHighlight = new List<GridCoordinate>();
+
         cellWidth = gridInfo.cellSize.x;
         cellLength = gridInfo.cellSize.z;
         
@@ -104,6 +107,7 @@ public class BattleTerrain : MonoBehaviour
     public void ReRollMoveSetAtGrid(GridCoordinate coord) {
         MoveSetType moveSetType = GetRandomGridMoveSet();
         gridMoveSets[coord.row, coord.col] = moveSetType;
+        Debug.Log("Rerolled "+coord+" to "+moveSetType);
         battleTerrainCanvas.UpdateMoveSetImageAtGridTo(coord,moveSetType);
     }
 
@@ -154,6 +158,16 @@ public class BattleTerrain : MonoBehaviour
         Debug.Log("Unregistered actor : "+actor.gameObject.name+" in coord "+coordinate);
     }
 
+    public void HighlightGridsInRange(GridCoordinate center, int range){
+        //Debug.Log("BFS at "+center);
+        UpdateGridsToHighlightByBFS(center, 0, range);
+        battleTerrainCanvas.HighlightGrids(gridsToHighlight);
+    }
+
+    public void UnHighlightPreviousGrids(){
+        battleTerrainCanvas.UnHighlightGrids(gridsToHighlight);
+        gridsToHighlight.Clear();
+    }
 
 ///======================================================================================================================================================
 ///Private Method:
@@ -215,17 +229,58 @@ public class BattleTerrain : MonoBehaviour
         foreach (GridCoordinate coord in initObstacles) {
             gridMoveSets[coord.row, coord.col] = MoveSetOnGrid.MoveSetType.Obstacle;
         }
-
     }
 
     void InitializeMoveSetUIOnGrids() => battleTerrainCanvas.InitializeTileImages(gridMoveSets,numRow,numCol);
 
-    
     //Get a random GridMoveSet except Obstacle
     MoveSetType GetRandomGridMoveSet()
     {
         MoveSetType[] values = (MoveSetType[]) Enum.GetValues(typeof(MoveSetType));
-        return values[new System.Random().Next(0,values.Length-1)];
+        return values[new System.Random().Next(0,values.Length-2)]; //NO obstacles and pickup
+    }
+
+    void UpdateGridsToHighlightByBFS(GridCoordinate start, int depth, int maxDepth){
+        if(depth>maxDepth)
+            return;
+
+        if(gridsToHighlight.Contains(start))
+            return;
+        
+        gridsToHighlight.Add(start);
+
+        List<GridCoordinate> adjacentGrids = GetAdjacentGrid(start);
+
+        foreach(GridCoordinate neighbour in adjacentGrids){
+            if(gridsToHighlight.Contains(neighbour))
+                continue;
+
+            UpdateGridsToHighlightByBFS(neighbour, depth+1, maxDepth);
+        }
+       
+    }
+
+    List<GridCoordinate> GetAdjacentGrid(GridCoordinate currentGrid){
+        List<GridCoordinate> adjacentGrids = new List<GridCoordinate>();
+
+        int leftColIndex = currentGrid.col-1;
+        int rightColIndex = currentGrid.col+1;
+        int upRowIndex = currentGrid.row-1;
+        int downRowIndex = currentGrid.row+1;
+        
+        if(leftColIndex >= 0)
+            adjacentGrids.Add(new GridCoordinate(currentGrid.row , leftColIndex));
+        
+        if(rightColIndex < numCol)
+            adjacentGrids.Add(new GridCoordinate(currentGrid.row , rightColIndex));    
+    
+        if(upRowIndex >= 0)
+            adjacentGrids.Add(new GridCoordinate(upRowIndex , currentGrid.col));
+        
+        if(downRowIndex < numRow)
+            adjacentGrids.Add(new GridCoordinate(downRowIndex , currentGrid.col));    
+        
+        return adjacentGrids;
     }
 
 #if UNITY_EDITOR
