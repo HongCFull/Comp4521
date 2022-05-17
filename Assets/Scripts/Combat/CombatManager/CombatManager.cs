@@ -49,6 +49,7 @@ public class CombatManager : MonoBehaviour
     void InitializeLevel()
     {
         ClearPreviousData();
+        battleTerrain.InitializeBattleTerrain();
         SpawnTurnBasedActors();
         SortRegisteredActorListBySpeed();
     }
@@ -66,23 +67,25 @@ public class CombatManager : MonoBehaviour
         List<TurnBasedActorSpawningSetting> actorSpawningInfos = LevelConstructionInfoBuffer.Instance.ConsumeTurnBasedActorSpawningInfos();
         foreach (TurnBasedActorSpawningSetting actorSpawningInfo in actorSpawningInfos)
         {
-            Vector3 spawnPos = battleTerrain.GetGridCenterPosByCoordinate(actorSpawningInfo.coordToSpawn);
+            Vector3 spawnPos = battleTerrain.GetGridCenterOnNavmeshByCoord(actorSpawningInfo.coordToSpawn);
             Quaternion lookRotation = actorSpawningInfo.orientationSetting.GetLookAtRotationByOrientation();
+            
             TurnBasedActor turnBasedActor = Instantiate(actorSpawningInfo.turnBasedActor,spawnPos,lookRotation);
             turnBasedActor.turnBasedActorType = actorSpawningInfo.turnBasedActorType;
             
             RegisterNewTurnBasedActor(turnBasedActor);
+            battleTerrain.SetMoveSetAtGridTo(actorSpawningInfo.coordToSpawn,MoveSetOnGrid.MoveSetType.Obstacle);
             
             Monster monster = turnBasedActor as Monster;
             if(!monster) continue;
 
             TurnBasedActorType actorType = monster.InitializeActorAs(actorSpawningInfo.turnBasedActorType);
             monster.InitializeAttributesByLv(actorSpawningInfo.monsterLv);
-            if (actorType  == TurnBasedActorType.FriendlyControllableMonster) {
-                monster.GetMonsterController().EnablePlayerControl();
-                allyCounts++;
-            }else {
+
+            if (actorType  == TurnBasedActorType.EnemyMonster) {
                 enemyCounts++;
+            }else {
+                allyCounts++;
             }
         }
     }

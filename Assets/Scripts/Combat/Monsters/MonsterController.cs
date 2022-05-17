@@ -83,7 +83,7 @@ public class MonsterController : MonoBehaviour
       GameObject objectHit = hit.transform.gameObject;
       //Debug.Log("ray cast object name = "+objectHit +" with pos = "+objectHit.transform.position);
       if (objectHit.layer.Equals(LayerMask.NameToLayer("TurnBasedGrid"))) {
-         gridCenter = CombatManager.Instance.battleTerrain.GetWalkableGridCenterByWorldPos(objectHit.transform.position);
+         gridCenter = CombatManager.Instance.battleTerrain.GetGridCenterOnNavmeshByWorldPos(objectHit.transform.position);
       }
 
       if (IsValidGrid(gridCenter)) {
@@ -117,7 +117,7 @@ public class MonsterController : MonoBehaviour
       if (manhattanDist > movementRange)
          return false;
 
-      if (CombatManager.Instance.battleTerrain.gridMoveSets[targetCoord.row, targetCoord.col] == GridMoveSet.Obstacle)
+      if (CombatManager.Instance.battleTerrain.gridMoveSets[targetCoord.row, targetCoord.col] == MoveSetOnGrid.MoveSetType.Obstacle)
          return false;
 
       return true;
@@ -141,7 +141,7 @@ public class MonsterController : MonoBehaviour
 
    void PerformMoveSetAtCurrentGrid(GridCoordinate coord)
    {
-      GridMoveSet moveSet = CombatManager.Instance.battleTerrain.PopMoveSetAtGrid(coord);
+      MoveSetOnGrid.MoveSetType moveSet = CombatManager.Instance.battleTerrain.PopMoveSetAtGrid(coord);
       controlledMonster.PerformMoveSet(moveSet);
    }
 
@@ -175,7 +175,7 @@ public class MonsterController : MonoBehaviour
       randomPosition.x += Random.insideUnitCircle.x*walkRadius;
       randomPosition.y = 0;
       randomPosition.z += Random.insideUnitCircle.y*walkRadius;
-      return CombatManager.Instance.battleTerrain.GetWalkableGridCenterByWorldPos(randomPosition);
+      return CombatManager.Instance.battleTerrain.GetGridCenterOnNavmeshByWorldPos(randomPosition);
    }
    
 }

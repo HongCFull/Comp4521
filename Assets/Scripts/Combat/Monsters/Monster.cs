@@ -36,7 +36,7 @@ public class Monster : TurnBasedActor, IClickable, IDamageable
     public override TurnBasedActorType InitializeActorAs(TurnBasedActorType type)
     {
         if(type==TurnBasedActorType.FriendlyControllableMonster) {
-            turnBasedActorCanvas.EnableHealthBarByActorType(type);
+            monsterController.EnablePlayerControl();
         }
         
         turnBasedActorCanvas.EnableHealthBarByActorType(type);
@@ -92,31 +92,31 @@ public class Monster : TurnBasedActor, IClickable, IDamageable
 
     public int GetMonsterMovementRange() => monsterInfo.MovementRange;
 
-    public void PerformMoveSet(GridMoveSet moveSet)
+    public void PerformMoveSet(MoveSetOnGrid.MoveSetType moveSet)
     {
         switch (moveSet)
         {
-            case GridMoveSet.MeleeAttack:
+            case MoveSetOnGrid.MoveSetType.Melee:
                 Debug.Log("Performing SkillA");
                 break;
             
-            case GridMoveSet.LongRangeAttack:
+            case MoveSetOnGrid.MoveSetType.Directional:
                 Debug.Log("Performing SkillB");
                 break;
             
-            case GridMoveSet.SpecialSkill:
+            case MoveSetOnGrid.MoveSetType.AOE:
                 Debug.Log("Performing SkillC");
                 break;
             
-            case GridMoveSet.UltimateSkill:
+            case MoveSetOnGrid.MoveSetType.UltimateSkill:
                 Debug.Log("Performing SkillD");
                 break;
             
-            case GridMoveSet.Defense:
+            case MoveSetOnGrid.MoveSetType.Defense:
                 Debug.Log("Performing Defense");
                 break;
             
-            case GridMoveSet.Heal:
+            case MoveSetOnGrid.MoveSetType.Heal:
                 Debug.Log("Performing Heal");
                 break;
         }
