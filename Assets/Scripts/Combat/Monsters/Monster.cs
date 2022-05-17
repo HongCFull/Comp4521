@@ -9,7 +9,8 @@ using UnityEngine.Serialization;
 public class Monster : TurnBasedActor, IClickable, IDamageable
 {
     [SerializeField] private MonsterInfo monsterInfo;
-    public MonsterController monsterController;
+    [SerializeField] MonsterController monsterController;
+    
     private float maxHp;
     private float currentHP;
     private float attack;
@@ -32,6 +33,16 @@ public class Monster : TurnBasedActor, IClickable, IDamageable
 //=================================================================================================================
 //Public Methods
 //=================================================================================================================
+    public override TurnBasedActorType InitializeActorAs(TurnBasedActorType type)
+    {
+        if(type==TurnBasedActorType.FriendlyControllableMonster) {
+            turnBasedActorCanvas.EnableHealthBarByActorType(type);
+        }
+        
+        turnBasedActorCanvas.EnableHealthBarByActorType(type);
+        return type;
+    }
+    
     public void InitializeAttributesByLv(int lv)
     {
         maxHp = monsterInfo.GetHealthPointAtLv(lv);
@@ -41,6 +52,15 @@ public class Monster : TurnBasedActor, IClickable, IDamageable
         currentHP = maxHp;
         UpdateTurnBasedActorSpeed(speed);
     }
+
+    public override void OnActorTurnStart()
+    {
+        base.OnActorTurnStart();
+        
+        StartCoroutine(StartActionsCoroutine());
+    }
+    
+    public override void OnActorTurnEnd(){ }
     
     public void OnClickDown()
     {
@@ -52,19 +72,12 @@ public class Monster : TurnBasedActor, IClickable, IDamageable
         //TODO: Hide the statistic of this monster
     }
     
-    public override void OnActorTurnStart()
-    {
-        base.OnActorTurnStart();
-        
-        StartCoroutine(StartActionsCoroutine());
-    }
-    
-    public override void OnActorTurnEnd()
-    { }
-
-    public void OnDamageTaken(int damage)
+    public void OnDamageTaken(float damage)
     {
         currentHP -= damage;
+        float UIFillPercentage = Mathf.Clamp(currentHP / maxHp, 0, 1);
+        turnBasedActorCanvas.activeHealthBar.SetFillByPercentage(UIFillPercentage);
+        
         if (currentHP <= 0) {
             OnDeath();
         }
@@ -72,7 +85,7 @@ public class Monster : TurnBasedActor, IClickable, IDamageable
 
     public void OnDeath()
     {
-        throw new NotImplementedException();
+        Debug.Log("Monster:"+gameObject.name+" dead");
     }
 
     public MonsterController GetMonsterController() => monsterController;
@@ -129,4 +142,11 @@ public class Monster : TurnBasedActor, IClickable, IDamageable
 //Private Methods
 //=================================================================================================================
     
+//=================================================================================================================
+//For development 
+//=================================================================================================================
+    [ContextMenu("Deal 20 damage to this enemy")]
+    public void Deal20DamageToThisEnemy() {
+        OnDamageTaken(20f);
+    }
 }

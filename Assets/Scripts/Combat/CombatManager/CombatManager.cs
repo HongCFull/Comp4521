@@ -12,7 +12,7 @@ public class CombatManager : MonoBehaviour
     
     public static CombatManager Instance { get; private set; }
     private const float ActionTimeLimit = 20f;  // Used to prevent the battle for stuck at an actor forever 
-    private const float TurnSmoothingTime = 0.1f;
+    private const float TurnSmoothingTime = 0.5f;
     
     private List<TurnBasedActor> registeredActors;
     private Queue<TurnBasedActor> turnOrder;
@@ -75,10 +75,11 @@ public class CombatManager : MonoBehaviour
             
             Monster monster = turnBasedActor as Monster;
             if(!monster) continue;
-            
+
+            TurnBasedActorType actorType = monster.InitializeActorAs(actorSpawningInfo.turnBasedActorType);
             monster.InitializeAttributesByLv(actorSpawningInfo.monsterLv);
-            if (actorSpawningInfo.turnBasedActorType == TurnBasedActorType.FriendlyMonster) {
-                monster.monsterController.EnablePlayerControl();
+            if (actorType  == TurnBasedActorType.FriendlyControllableMonster) {
+                monster.GetMonsterController().EnablePlayerControl();
                 allyCounts++;
             }else {
                 enemyCounts++;

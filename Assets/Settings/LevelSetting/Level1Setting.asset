@@ -15,7 +15,7 @@ MonoBehaviour:
   chapter: 1
   level: 1
   monsterSpawningInfos:
-  - turnBasedActorType: 1
+  - turnBasedActorType: 2
     turnBasedActor: {fileID: 1841441427958861661, guid: fdd67731c2fcc2d4bb2161c8cdea8f65, type: 3}
     coordToSpawn:
       row: 4
@@ -23,7 +23,7 @@ MonoBehaviour:
     orientationSetting:
       orientation: 3
     monsterLv: 1
-  - turnBasedActorType: 1
+  - turnBasedActorType: 2
     turnBasedActor: {fileID: 536077985675614646, guid: 800223cdaf0ab6e4f9886948688db045, type: 3}
     coordToSpawn:
       row: 4
