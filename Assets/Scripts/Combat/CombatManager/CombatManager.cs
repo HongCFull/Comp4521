@@ -12,7 +12,7 @@ public class CombatManager : MonoBehaviour
     
     public static CombatManager Instance { get; private set; }
     private const float ActionTimeLimit = 20f;  // Used to prevent the battle for stuck at an actor forever 
-    private const float TurnSmoothingTime = 0.1f;
+    private const float TurnSmoothingTime = 0.5f;
     
     private List<TurnBasedActor> registeredActors;
     private Queue<TurnBasedActor> turnOrder;
@@ -30,6 +30,7 @@ public class CombatManager : MonoBehaviour
         
         registeredActors = new List<TurnBasedActor>();
         turnOrder = new Queue<TurnBasedActor>();
+
         InitializeLevel();
     }
 
@@ -49,6 +50,7 @@ public class CombatManager : MonoBehaviour
     void InitializeLevel()
     {
         ClearPreviousData();
+        battleTerrain.InitializeBattleTerrain();
         SpawnTurnBasedActors();
         SortRegisteredActorListBySpeed();
     }
@@ -64,22 +66,27 @@ public class CombatManager : MonoBehaviour
     void SpawnTurnBasedActors()
     {
         List<TurnBasedActorSpawningSetting> actorSpawningInfos = LevelConstructionInfoBuffer.Instance.ConsumeTurnBasedActorSpawningInfos();
-        foreach (TurnBasedActorSpawningSetting actorSpawningInfo in actorSpawningInfos) {
+        foreach (TurnBasedActorSpawningSetting actorSpawningInfo in actorSpawningInfos)
+        {
+            Vector3 spawnPos = battleTerrain.GetGridCenterOnNavmeshByCoord(actorSpawningInfo.coordToSpawn);
+            Quaternion lookRotation = actorSpawningInfo.orientationSetting.GetLookAtRotationByOrientation();
             
-            TurnBasedActor turnBasedActor = Instantiate(actorSpawningInfo.turnBasedActorInfo.GetTurnBasedActorPrefab(),actorSpawningInfo.positionToSpawn,quaternion.identity);
+            TurnBasedActor turnBasedActor = Instantiate(actorSpawningInfo.turnBasedActor,spawnPos,lookRotation);
             turnBasedActor.turnBasedActorType = actorSpawningInfo.turnBasedActorType;
             
             RegisterNewTurnBasedActor(turnBasedActor);
+            battleTerrain.SetMoveSetAtGridTo(actorSpawningInfo.coordToSpawn,MoveSetOnGrid.MoveSetType.Obstacle);
             
             Monster monster = turnBasedActor as Monster;
             if(!monster) continue;
-            
+
+            TurnBasedActorType actorType = monster.InitializeActorAs(actorSpawningInfo.turnBasedActorType);
             monster.InitializeAttributesByLv(actorSpawningInfo.monsterLv);
-            if (actorSpawningInfo.turnBasedActorType == TurnBasedActorType.FriendlyMonster) {
-                monster.monsterController.EnablePlayerControl();
-                allyCounts++;
-            }else {
+
+            if (actorType  == TurnBasedActorType.EnemyMonster) {
                 enemyCounts++;
+            }else {
+                allyCounts++;
             }
         }
     }
@@ -125,9 +132,11 @@ public class CombatManager : MonoBehaviour
         float timer = 0f;
         while (!turnBasedActor.HasExecutedActions) {
             yield return null;
-            timer += Time.deltaTime;
-            if(timer>=ActionTimeLimit)
-                yield break;
+
+            //Enable if there is action time limit for each actor 
+            //timer += Time.deltaTime;
+            //if(timer>=ActionTimeLimit)
+            //    yield break;
         }
         turnBasedActor.OnActorTurnEnd();
     }

@@ -3,6 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+ 
+/// <summary>
+/// DEPRECATED
+/// </summary>
 public class MonsterInfoManager : MonoBehaviour
 {
     public static MonsterInfoManager Instance { get; private set; }

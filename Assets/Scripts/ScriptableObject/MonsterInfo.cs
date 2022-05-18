@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "NewMonsterStatistic", menuName = "ScriptableObjects/NewMonsterStatistic", order = 1)]
-public class MonsterInfo : TurnBasedActorInfo
+public class MonsterInfo : ScriptableObject
 {
     [Header("The Evolution Chain This Monster Belongs To")]
     [SerializeField] private EvolutionChain evolutionChain;
     [SerializeField] private bool isUnlocked;
     [SerializeField] private Monster monsterPrefab;
+    [SerializeField] private Sprite monsterPreviewImage;
 
     [Header("ElementType")]
     [SerializeField] private ElementType elementType;
@@ -28,12 +29,16 @@ public class MonsterInfo : TurnBasedActorInfo
     [Header("Speed Category")]
     [SerializeField] private float baseSpeed;
     [SerializeField] private float speedGrowthRate;
-    [SerializeField] private int movementRange;
     
+    [Header("Range Category")]
+    [SerializeField] private int movementRange;
+    [SerializeField] private int meleeAttackRange;
+    [SerializeField] private int longRangeAttackRange;
+    [SerializeField] private int specialSkillRange;
+
     public bool IsUnlocked => isUnlocked;
     public ElementType ElementType => elementType;
     public int MovementRange => movementRange;
-    
 
 //TODO: GameBalance, for prototyping only:
     public float GetHealthPointAtLv(int lv) => baseHealthPoint + Mathf.Pow(GetLevelRatio(lv),hpGrowthRate);
@@ -42,5 +47,7 @@ public class MonsterInfo : TurnBasedActorInfo
     public float GetSpeedAtLv(int lv) => baseSpeed + Mathf.Pow(GetLevelRatio(lv),speedGrowthRate);
     private float GetLevelRatio(int lv) => lv > 1 ? Mathf.Sqrt(lv) + 1 : 1;
 
-    public override TurnBasedActor GetTurnBasedActorPrefab() => monsterPrefab;
+    public TurnBasedActor GetTurnBasedActorPrefab() => monsterPrefab;
+
+    public Sprite GetPreviewImage() => monsterPreviewImage;
 }
