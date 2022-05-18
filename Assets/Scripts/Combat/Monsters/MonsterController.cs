@@ -17,6 +17,7 @@ public class MonsterController : MonoBehaviour
    private Camera mainCamera;
    private NavMeshAgent navMeshAgent;
    private NavMeshPath path;
+   private Animator animator;
    
    private Vector3 gridPosition;
    private bool isAskingPlayerInput = false;
@@ -27,6 +28,7 @@ public class MonsterController : MonoBehaviour
       
       navMeshAgent = GetComponent<NavMeshAgent>();
       controlledMonster = GetComponent<Monster>();
+      animator = GetComponent<Animator>();
       mainCamera = Camera.main;
    }
 
@@ -34,7 +36,6 @@ public class MonsterController : MonoBehaviour
    {
       if (!isAskingPlayerInput)
          return;
-      HandlePlayerScreenTouchInput();
    }
    
    public void EnablePlayerControl()=> enablePlayerControl = true;
@@ -47,7 +48,8 @@ public class MonsterController : MonoBehaviour
          AskForAIMovementInput();   //sync operation
       }else {
          CombatManager.Instance.battleTerrain.HighlightGridsInRange(currentCoord, controlledMonster.movementRange);
-         yield return StartCoroutine(AskForPlayerMovementInput());   //async operation
+         ResetMonsterControllerState();
+         yield return StartCoroutine(AskForPlayerInput(null));   //async operation
       }
 
       CombatManager.Instance.battleTerrain.UnregisterActorOnGrid(controlledMonster,currentCoord);
@@ -61,12 +63,58 @@ public class MonsterController : MonoBehaviour
 
       currentCoord = GetCurrentGridCoord();
       CombatManager.Instance.battleTerrain.RegisterTurnBasedActorOnGrid(controlledMonster,currentCoord);
-      PerformMoveSetAtCurrentGrid(currentCoord);
-      ResetMonsterControllerState();
+
+      // Handle Moveset/Skills
+      MoveSetOnGrid.MoveSetType moveSet = CombatManager.Instance.battleTerrain.PopMoveSetAtGrid(currentCoord);
+      SkillAttribute skill = controlledMonster.GetSkillFromMoveSet(moveSet);
+      if(skill != null) {
+         if(enablePlayerControl) {
+            CombatManager.Instance.battleTerrain.HighlightPotentialSkillTargets(currentCoord, skill);
+            List<GridCoordinate> confirmingGrids = new List<GridCoordinate>();
+            while(true) {
+               ResetMonsterControllerState();
+               yield return StartCoroutine(AskForPlayerInput(skill));
+               GridCoordinate targetGrid = CombatManager.Instance.battleTerrain.GetGridCoordByWorldPos(gridPosition);
+               CombatManager.Instance.battleTerrain.HighlightPotentialSkillTargets(currentCoord, skill);
+
+               if(confirmingGrids.Contains(targetGrid)) {
+                  break;
+               } else {
+                  confirmingGrids.Clear();
+                  switch(skill.targetType) {
+                     case SkillAttribute.TargetType.Single:
+                        confirmingGrids.Add(targetGrid);
+                        break;
+                     case SkillAttribute.TargetType.Directional:
+                        for(int i = 0; i < 4; i++) {
+                           List<Vector2Int> _directionalGrids = skill.RotatedTargetTiles(i);
+                           if(_directionalGrids.Contains(new Vector2Int(targetGrid.row - currentCoord.row, targetGrid.col - currentCoord.col))) {
+                              foreach(Vector2Int target in _directionalGrids) {
+                                 confirmingGrids.Add(new GridCoordinate(currentCoord.row + target.x, currentCoord.col + target.y));
+                              }
+                              break;
+                           }
+                        }
+                        break;
+                     case SkillAttribute.TargetType.Centered:
+                        for(int i = 0; i < 4; i++) {
+                           foreach(Vector2Int target in skill.RotatedTargetTiles(i)) {
+                              confirmingGrids.Add(new GridCoordinate(currentCoord.row + target.x, currentCoord.col + target.y));
+                           }
+                        }
+                        break;
+                  }
+                  CombatManager.Instance.battleTerrain.HighlightSkillTargetGrids(confirmingGrids);
+               }
+            }
+            
+         } else {
+            AskForAISkillInput(skill);
+         }
+      }
    }
 
-   void HandlePlayerScreenTouchInput()
-   {
+   void HandlePlayerScreenTouchInput(SkillAttribute skill) {
       if (!Input.GetMouseButtonDown(0))
          return;
 
@@ -77,53 +125,80 @@ public class MonsterController : MonoBehaviour
       Vector3 gridCenter = Vector3.zero;
       Debug.DrawRay(ray.origin, RayCastDistance * ray.direction, Color.cyan, 3f);
 
-      bool hitSomeThing = Physics.Raycast(ray, out hit, RayCastDistance);
-      if (!hitSomeThing) {
+      if (!Physics.Raycast(ray, out hit, RayCastDistance)) {
          Debug.Log("cant hit something,remember to assign collider to the object!");
          return;
       }
 
       GameObject objectHit = hit.transform.gameObject;
-      //Debug.Log("ray cast object name = "+objectHit +" with pos = "+objectHit.transform.position);
+      // Debug.Log("ray cast object name = "+objectHit +" with pos = "+objectHit.transform.position);
       if (objectHit.layer.Equals(LayerMask.NameToLayer("TurnBasedGrid"))) {
          gridCenter = CombatManager.Instance.battleTerrain.GetGridCenterOnNavmeshByWorldPos(objectHit.transform.position);
       }
 
-      if (IsValidGrid(gridCenter)) {
+      if (IsValidGrid(gridCenter, skill)) {
          gridPosition = gridCenter;
          gotAvailableGridPos = true;
       }
    }
    
-   void AskForAIMovementInput()
-   {
+   void AskForAIMovementInput() {
       gridPosition = GetRandomReachablePosition(6);
+      gotAvailableGridPos = true;
    }
 
-   IEnumerator AskForPlayerMovementInput()
-   {
-      isAskingPlayerInput = true;   //enable the update method to process player input 
-      while (!gotAvailableGridPos) {   //Wait until the player clicked a valid grid 
-         //Debug.Log("Waiting a valid pos");
+   void AskForAISkillInput(SkillAttribute skill) {
+
+      GridCoordinate currentCoord = CombatManager.Instance.battleTerrain.GetGridCoordByWorldPos(gameObject.transform.position);
+      List<GridCoordinate> potentialTargets = new List<GridCoordinate>();
+      for(int i = 0; i < 4; i++) {
+         foreach(Vector2Int target in skill.RotatedTargetTiles(i)) {
+            potentialTargets.Add(new GridCoordinate(currentCoord.row + target.x, currentCoord.col + target.y));
+         }
+      }
+
+      gridPosition = CombatManager.Instance.battleTerrain.GetGridCenterOnNavmeshByCoord(potentialTargets[Random.Range(0, potentialTargets.Count)]);
+      gotAvailableGridPos = true;
+   }
+
+   IEnumerator AskForPlayerInput(SkillAttribute skill) {
+      isAskingPlayerInput = true;   // enable the update method to process player input
+      while (!gotAvailableGridPos) {   // Wait until the player clicked a valid grid
+         // Debug.Log("Waiting a valid pos");
+         HandlePlayerScreenTouchInput(skill);
          yield return null;
       }
+      isAskingPlayerInput = false;
    }
    
-   private bool IsValidGrid(Vector3 worldPos)
-   {
-      int movementRange = controlledMonster.GetMonsterMovementRange();
-      GridCoordinate targetCoord = CombatManager.Instance.battleTerrain.GetGridCoordByWorldPos(worldPos);
-      GridCoordinate currentCoord = CombatManager.Instance.battleTerrain.GetGridCoordByWorldPos(gameObject.transform.position);
+   private bool IsValidGrid(Vector3 worldPos, SkillAttribute skill) {
+      if(skill == null) { // Movement judge
+         int movementRange = controlledMonster.GetMonsterMovementRange();
+         GridCoordinate targetCoord = CombatManager.Instance.battleTerrain.GetGridCoordByWorldPos(worldPos);
+         GridCoordinate currentCoord = CombatManager.Instance.battleTerrain.GetGridCoordByWorldPos(gameObject.transform.position);
 
-      int manhattanDist = Mathf.Abs(currentCoord.row - targetCoord.row) +
-                          Mathf.Abs(currentCoord.col - targetCoord.col);
-      if (manhattanDist > movementRange)
+         int manhattanDist = Mathf.Abs(currentCoord.row - targetCoord.row) +
+                           Mathf.Abs(currentCoord.col - targetCoord.col);
+         if (manhattanDist > movementRange)
+            return false;
+
+         if (CombatManager.Instance.battleTerrain.gridMoveSets[targetCoord.row, targetCoord.col] == MoveSetOnGrid.MoveSetType.Obstacle)
+            return false;
+
+         return true;
+      } else {
+         GridCoordinate currentCoord = CombatManager.Instance.battleTerrain.GetGridCoordByWorldPos(gameObject.transform.position);
+         List<GridCoordinate> potentialTargets = new List<GridCoordinate>();
+         for(int i = 0; i < 4; i++) {
+            foreach(Vector2Int target in skill.RotatedTargetTiles(i)) {
+               potentialTargets.Add(new GridCoordinate(currentCoord.row + target.x, currentCoord.col + target.y));
+            }
+         }
+
+         GridCoordinate targetCoord = CombatManager.Instance.battleTerrain.GetGridCoordByWorldPos(worldPos);
+         if(potentialTargets.Contains(targetCoord)) return true;
          return false;
-
-      if (CombatManager.Instance.battleTerrain.gridMoveSets[targetCoord.row, targetCoord.col] == MoveSetOnGrid.MoveSetType.Obstacle)
-         return false;
-
-      return true;
+      }
    }
    
    IEnumerator MoveToPositionCoroutine(Vector3 position)
@@ -133,18 +208,13 @@ public class MonsterController : MonoBehaviour
          Debug.Log("Pos "+position+" is not reachable!");
          yield break;
       }
-      
+
+      animator.SetBool("Moving", true);
       navMeshAgent.destination = position;
       while (!HasReachedPosition(position)) {
          yield return new WaitForSeconds(0.2f);;
       }
-   }
-
-
-   void PerformMoveSetAtCurrentGrid(GridCoordinate coord)
-   {
-      MoveSetOnGrid.MoveSetType moveSet = CombatManager.Instance.battleTerrain.PopMoveSetAtGrid(coord);
-      controlledMonster.PerformMoveSet(moveSet);
+      animator.SetBool("Moving", false);
    }
 
    GridCoordinate GetCurrentGridCoord()

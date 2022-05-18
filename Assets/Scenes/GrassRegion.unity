@@ -386,6 +386,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 91199493}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &91199496
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -702,7 +714,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 2.29375, y: 1}
+    m_SensorSize: {x: 2.0068307, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -1531,6 +1543,54 @@ PrefabInstance:
     - target: {fileID: 4795513292405813099, guid: 19d13df0e41252e4daafc96b015f852c, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4795513292408650746, guid: 19d13df0e41252e4daafc96b015f852c, type: 3}
+      propertyPath: gridMovementHighlight.a
+      value: 0.6509804
+      objectReference: {fileID: 0}
+    - target: {fileID: 4795513292408650746, guid: 19d13df0e41252e4daafc96b015f852c, type: 3}
+      propertyPath: gridMovementHighlight.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4795513292408650746, guid: 19d13df0e41252e4daafc96b015f852c, type: 3}
+      propertyPath: gridMovementHighlight.g
+      value: 0.92941177
+      objectReference: {fileID: 0}
+    - target: {fileID: 4795513292408650746, guid: 19d13df0e41252e4daafc96b015f852c, type: 3}
+      propertyPath: gridMovementHighlight.r
+      value: 0.34117648
+      objectReference: {fileID: 0}
+    - target: {fileID: 4795513292408650746, guid: 19d13df0e41252e4daafc96b015f852c, type: 3}
+      propertyPath: gridAttackableHighlight.a
+      value: 0.5019608
+      objectReference: {fileID: 0}
+    - target: {fileID: 4795513292408650746, guid: 19d13df0e41252e4daafc96b015f852c, type: 3}
+      propertyPath: gridAttackableHighlight.b
+      value: 0.49167854
+      objectReference: {fileID: 0}
+    - target: {fileID: 4795513292408650746, guid: 19d13df0e41252e4daafc96b015f852c, type: 3}
+      propertyPath: gridAttackableHighlight.g
+      value: 0.49167854
+      objectReference: {fileID: 0}
+    - target: {fileID: 4795513292408650746, guid: 19d13df0e41252e4daafc96b015f852c, type: 3}
+      propertyPath: gridAttackableHighlight.r
+      value: 0.8207547
+      objectReference: {fileID: 0}
+    - target: {fileID: 4795513292408650746, guid: 19d13df0e41252e4daafc96b015f852c, type: 3}
+      propertyPath: gridAttackConfirmHighlight.a
+      value: 0.7882353
+      objectReference: {fileID: 0}
+    - target: {fileID: 4795513292408650746, guid: 19d13df0e41252e4daafc96b015f852c, type: 3}
+      propertyPath: gridAttackConfirmHighlight.b
+      value: 0.0990566
+      objectReference: {fileID: 0}
+    - target: {fileID: 4795513292408650746, guid: 19d13df0e41252e4daafc96b015f852c, type: 3}
+      propertyPath: gridAttackConfirmHighlight.g
+      value: 0.0990566
+      objectReference: {fileID: 0}
+    - target: {fileID: 4795513292408650746, guid: 19d13df0e41252e4daafc96b015f852c, type: 3}
+      propertyPath: gridAttackConfirmHighlight.r
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4795513292408650747, guid: 19d13df0e41252e4daafc96b015f852c, type: 3}
       propertyPath: m_RootOrder
@@ -4251,6 +4311,10 @@ PrefabInstance:
     - target: {fileID: 4795513294314155585, guid: 19d13df0e41252e4daafc96b015f852c, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4795513294314155590, guid: 19d13df0e41252e4daafc96b015f852c, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4795513294324860215, guid: 19d13df0e41252e4daafc96b015f852c, type: 3}
       propertyPath: m_AnchorMax.y

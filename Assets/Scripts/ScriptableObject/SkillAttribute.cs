@@ -5,24 +5,24 @@ using UnityEngine;
 public class SkillAttribute : ScriptableObject{
     public enum TargetType {
         Single,
-        Multiple
+        Directional,
+        Centered
     }
+    public TargetType targetType;
     public enum SkillType {
         Attack,
         Buff,
         Heal
     }
+    public SkillType skillType;
     public enum AnimationType {
         Melee,
         Ranged,
-        Area,
+        Areal,
         Buff
     }
-    
-    [SerializeField] private TargetType targetType;
-    [SerializeField] private SkillType skillType;
-    [SerializeField] private AnimationType animationType;
-    public List<Vector2Int> affectedTiles { get; private set; }= new List<Vector2Int>();
+    public AnimationType animationType;
+    public List<Vector2Int> affectedTiles = new List<Vector2Int>();
     public List<Vector2Int> RotatedTargetTiles(int rotatedQuadrants) {
         // Quadrant 0: unrotated
         // Quadrant 1: Anti-Clockwise 90 degrees

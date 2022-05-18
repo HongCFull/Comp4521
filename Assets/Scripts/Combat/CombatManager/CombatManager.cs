@@ -129,7 +129,6 @@ public class CombatManager : MonoBehaviour
         
         turnBasedActor.OnActorTurnStart();
 
-        float timer = 0f;
         while (!turnBasedActor.HasExecutedActions) {
             yield return null;
 

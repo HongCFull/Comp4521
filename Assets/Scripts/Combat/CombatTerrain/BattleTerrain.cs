@@ -43,6 +43,9 @@ public class BattleTerrain : MonoBehaviour
     [SerializeField] private Grid gridInfo;
     [SerializeField] private Transform topLeftTilePivot;
     [SerializeField] private List<GridCoordinate> initObstacles;
+    [SerializeField] private Color gridMovementHighlight;
+    [SerializeField] private Color gridAttackableHighlight;
+    [SerializeField] private Color gridAttackConfirmHighlight;
     
     [Tooltip("The maximum number of tiles in the (X-axis)")]
     [SerializeField] private int numCol;
@@ -164,7 +167,21 @@ public class BattleTerrain : MonoBehaviour
         gridsToHighlight.Clear();
         //UpdateGridsToHighlightByBFS(center, range);
         UpdateGridsToHighlightBruteForce(center,range);
-        battleTerrainCanvas.HighlightGrids(gridsToHighlight);
+        battleTerrainCanvas.HighlightGrids(gridsToHighlight, gridMovementHighlight);
+    }
+
+    public void HighlightPotentialSkillTargets(GridCoordinate center, SkillAttribute skill) {
+        gridsToHighlight.Clear();
+        for(int i = 0; i < 4; i++) {
+            foreach(Vector2Int target in skill.RotatedTargetTiles(i)) {
+                gridsToHighlight.Add(new GridCoordinate(center.row + target.x, center.col + target.y));
+            }
+        }
+        battleTerrainCanvas.HighlightGrids(gridsToHighlight, gridAttackableHighlight);
+    }
+
+    public void HighlightSkillTargetGrids(List<GridCoordinate> grids) {
+        battleTerrainCanvas.HighlightGrids(grids, gridAttackConfirmHighlight);
     }
 
     public void UnHighlightPreviousGrids(){

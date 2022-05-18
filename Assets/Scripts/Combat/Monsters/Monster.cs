@@ -98,35 +98,10 @@ public class Monster : TurnBasedActor, IClickable, IDamageable
 
     public int GetMonsterMovementRange() => monsterInfo.MovementRange;
 
-    public void PerformMoveSet(MoveSetOnGrid.MoveSetType moveSet)
-    {
-        switch (moveSet)
-        {
-            case MoveSetOnGrid.MoveSetType.Melee:
-                Debug.Log("Performing SkillA");
-                break;
-            
-            case MoveSetOnGrid.MoveSetType.Directional:
-                Debug.Log("Performing SkillB");
-                break;
-            
-            case MoveSetOnGrid.MoveSetType.AOE:
-                Debug.Log("Performing SkillC");
-                break;
-            
-            case MoveSetOnGrid.MoveSetType.UltimateSkill:
-                Debug.Log("Performing SkillD");
-                break;
-            
-            case MoveSetOnGrid.MoveSetType.Defense:
-                Debug.Log("Performing Defense");
-                break;
-            
-            case MoveSetOnGrid.MoveSetType.Heal:
-                Debug.Log("Performing Heal");
-                break;
-        }
+    public SkillAttribute GetSkillFromMoveSet(MoveSetOnGrid.MoveSetType moveSet) {
+        return monsterInfo.GetSkillAttribute(moveSet);
     }
+
     
 //=================================================================================================================
 //Protected Methods
@@ -137,8 +112,8 @@ public class Monster : TurnBasedActor, IClickable, IDamageable
     {
         yield return StartCoroutine(monsterController.ProcessMonsterMovementCoroutine());
         
-        Debug.Log("playing attack animation for 2sec");
-        animator.SetTrigger("Melee");
+        // Debug.Log("playing attack animation for 2sec");
+        // animator.SetTrigger("Melee");
         
         yield return new WaitForSeconds(2f);
         SetHasExecutedActions();  

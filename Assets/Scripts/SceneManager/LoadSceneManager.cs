@@ -23,7 +23,7 @@ public class LoadSceneManager : MonoBehaviour
     {
         if (!IsValidSceneIndex(index)) {
             throw new Exception(index + " is an invalid Scene index!");
-            yield break;
+            // yield break;
         }
 
         AsyncOperation loadSceneOperation= SceneManager.LoadSceneAsync(index);
