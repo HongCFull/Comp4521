@@ -98,8 +98,27 @@ public class Monster : TurnBasedActor, IClickable, IDamageable
 
     public int GetMonsterMovementRange() => monsterInfo.MovementRange;
 
-    public void PerformMoveSet(MoveSetOnGrid.MoveSetType moveSet)
+//TODO:
+    public bool RequireUserInputForSkill(MoveSetOnGrid.MoveSetType moveSetType)
     {
+        switch (moveSetType)
+        {
+            case MoveSetOnGrid.MoveSetType.Melee:
+                return true;    //skill attribute->needInput
+            case MoveSetOnGrid.MoveSetType.Directional:
+                return true;
+            case MoveSetOnGrid.MoveSetType.AOE:
+                return true;
+            case MoveSetOnGrid.MoveSetType.UltimateSkill:
+                return true;
+        }
+        return false;
+    } 
+
+//TODO:
+    public void CastSkillAtGrid(MoveSetOnGrid.MoveSetType moveSet,GridCoordinate gridCoord)
+    {
+        List<GridCoordinate> gridsToDamage = new List<GridCoordinate>();
         switch (moveSet)
         {
             case MoveSetOnGrid.MoveSetType.Melee:

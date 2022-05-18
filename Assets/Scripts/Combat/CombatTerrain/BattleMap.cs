@@ -37,7 +37,7 @@ public struct GridCoordinate : IEquatable<GridCoordinate>
 
 }
 
-public class BattleTerrain : MonoBehaviour
+public class BattleMap : MonoBehaviour
 {
     [Header("Grid Setting")]
     [SerializeField] private Grid gridInfo;
@@ -59,8 +59,11 @@ public class BattleTerrain : MonoBehaviour
 
     [Header("References")]
     [SerializeField] BattleTerrainCanvas battleTerrainCanvas;
+    
+    public static BattleMap Instance { get; private set; }
+    
     public MoveSetType[,] gridMoveSets { get; private set; }
-    public Dictionary<GridCoordinate, TurnBasedActor> turnBasedActorCoord;
+    public Dictionary<GridCoordinate, TurnBasedActor> actorsCoord;
 
     private MoveSetType[] stretchedGridMoveSets;
     private List<GridCoordinate> gridsToHighlight;
@@ -71,12 +74,15 @@ public class BattleTerrain : MonoBehaviour
     
     void Awake()
     {
+        if (!Instance)
+            Instance = this;
         gridMoveSets = new MoveSetType[numRow,numCol];
         stretchedGridMoveSets = new MoveSetType[numRow * numCol];
-        turnBasedActorCoord = new Dictionary<GridCoordinate, TurnBasedActor>();
+        actorsCoord = new Dictionary<GridCoordinate, TurnBasedActor>();
         gridsToHighlight = new List<GridCoordinate>();
 
         cellWidth = gridInfo.cellSize.x;
+        cellHeight = gridInfo.cellSize.y;
         cellLength = gridInfo.cellSize.z;
         
     }
@@ -108,7 +114,7 @@ public class BattleTerrain : MonoBehaviour
     public void ReRollMoveSetAtGrid(GridCoordinate coord) {
         MoveSetType moveSetType = GetRandomGridMoveSet();
         gridMoveSets[coord.row, coord.col] = moveSetType;
-        Debug.Log("Rerolled "+coord+" to "+moveSetType);
+        //Debug.Log("Rerolled "+coord+" to "+moveSetType);
         battleTerrainCanvas.UpdateMoveSetImageAtGridTo(coord,moveSetType);
     }
 
@@ -141,26 +147,26 @@ public class BattleTerrain : MonoBehaviour
 
     public void RegisterTurnBasedActorOnGrid(TurnBasedActor actor, GridCoordinate coordinate)
     {
-        if (turnBasedActorCoord.ContainsKey(coordinate)) {
-            Debug.Log("coordinate: "+coordinate+" is occupied by actor: " + turnBasedActorCoord[coordinate].gameObject.name);
+        if (actorsCoord.ContainsKey(coordinate)) {
+            //Debug.Log("coordinate: "+coordinate+" is occupied by actor: " + actorsCoord[coordinate].gameObject.name);
             return;
         }
-        turnBasedActorCoord.Add(coordinate,actor);
-        Debug.Log("Save actor : "+actor.gameObject.name+" in coord "+coordinate);
+        actorsCoord.Add(coordinate,actor);
+        //Debug.Log("Save actor : "+actor.gameObject.name+" in coord "+coordinate);
     }
     
     public void UnregisterActorOnGrid(TurnBasedActor actor, GridCoordinate coordinate)
     {
-        if (!turnBasedActorCoord.ContainsKey(coordinate)) {
-            Debug.Log("coordinate: "+coordinate+" is empty, cant unregister actor on it");
+        if (!actorsCoord.ContainsKey(coordinate)) {
+            //Debug.Log("coordinate: "+coordinate+" is empty, cant unregister actor on it");
             return;
         }
-        turnBasedActorCoord.Remove(coordinate);
-        Debug.Log("Unregistered actor : "+actor.gameObject.name+" in coord "+coordinate);
+        actorsCoord.Remove(coordinate);
+        //Debug.Log("Unregistered actor : "+actor.gameObject.name+" in coord "+coordinate);
     }
 
     public void HighlightGridsInRange(GridCoordinate center, int range){
-        Debug.Log("BFS at "+center);
+        //Debug.Log("BFS at "+center);
         gridsToHighlight.Clear();
         //UpdateGridsToHighlightByBFS(center, range);
         UpdateGridsToHighlightBruteForce(center,range);
@@ -170,6 +176,19 @@ public class BattleTerrain : MonoBehaviour
     public void UnHighlightPreviousGrids(){
         battleTerrainCanvas.UnHighlightGrids(gridsToHighlight);
         gridsToHighlight.Clear();
+    }
+
+    public void DealDamageToGrids(List<GridCoordinate> gridCoordinates, float damage)
+    {
+        foreach (var gridCoord in gridCoordinates) {
+            if (!actorsCoord.ContainsKey(gridCoord)) 
+                continue;
+
+            if (actorsCoord[gridCoord] is IDamageable damageable) {
+                damageable.OnDamageTaken(damage);
+            }
+
+        }
     }
 
 ///======================================================================================================================================================
@@ -230,7 +249,7 @@ public class BattleTerrain : MonoBehaviour
     void AssignInitialObstacle()
     {
         foreach (GridCoordinate coord in initObstacles) {
-            gridMoveSets[coord.row, coord.col] = MoveSetOnGrid.MoveSetType.Obstacle;
+            gridMoveSets[coord.row, coord.col] = MoveSetType.Obstacle;
         }
     }
 
@@ -264,82 +283,33 @@ public class BattleTerrain : MonoBehaviour
         }
     }
 
-    
-
-    // void UpdateGridsToHighlightByBFS(GridCoordinate start, int maxDepth){
-      
-    //     int depth = 0;
-    //     int numOfObjToVisitInThisDepth=1; 
-    //     int numOfObjToVisitInNextDepth = 0;
-
-    //     Queue<GridCoordinate> gridsToVisit = new Queue<GridCoordinate>();
-    //     gridsToVisit.Enqueue(start);
-
-    //     while(gridsToVisit.Count!=0){            
-    //         GridCoordinate current = gridsToVisit.Dequeue();
-    //         gridsToHighlight.Add(current);
-    //         Debug.Log("added "+current);
-
-    //         List<GridCoordinate> adjacentGrids = GetNonVisitedAdjacentGrid(current);
-    //         foreach(var adj in adjacentGrids){
-    //             Debug.Log("adj = "+ adj);
-    //         }
-    //         Debug.Log("num of adjacentGrids : "+adjacentGrids.Count);
-    //         numOfObjToVisitInThisDepth--;
-    //         numOfObjToVisitInNextDepth += adjacentGrids.Count;
-
-    //         if(numOfObjToVisitInThisDepth == 0){
-    //             depth++;
-                
-    //             if(depth>maxDepth)
-    //                 return;
-    //             numOfObjToVisitInThisDepth = numOfObjToVisitInNextDepth;
-    //             numOfObjToVisitInNextDepth = 0;
-    //         }
-
-    //         foreach(GridCoordinate adj in adjacentGrids){
-    //             gridsToVisit.Enqueue(adj);
-    //             Debug.Log("queued "+adj);
-    //         }
-    //     }
-       
-    // }
-
-    // List<GridCoordinate> GetNonVisitedAdjacentGrid(GridCoordinate currentGrid){
-    //     List<GridCoordinate> adjacentGrids = new List<GridCoordinate>();
-
-    //     int leftColIndex = currentGrid.col-1;
-    //     int rightColIndex = currentGrid.col+1;
-    //     int upRowIndex = currentGrid.row-1;
-    //     int downRowIndex = currentGrid.row+1;
-        
-    //     if(upRowIndex >= 0){
-    //         GridCoordinate newGrid = new GridCoordinate(upRowIndex , currentGrid.col);
-    //         if(!gridsToHighlight.Contains(newGrid))
-    //             gridsToHighlight.Add(newGrid);
-    //     }        
-    //     if(downRowIndex < numRow){
-    //         GridCoordinate newGrid = new GridCoordinate(downRowIndex , currentGrid.col);
-    //         if(!gridsToHighlight.Contains(newGrid))
-    //             gridsToHighlight.Add(newGrid);
-    //     }
-    
-    //     if(leftColIndex >= 0){
-    //         GridCoordinate newGrid = new GridCoordinate(currentGrid.row , leftColIndex);
-    //         if(!gridsToHighlight.Contains(newGrid))
-    //             gridsToHighlight.Add(newGrid);
-    //     }      
-
-    //     if(rightColIndex < numCol){
-    //         GridCoordinate newGrid = new GridCoordinate(currentGrid.row , rightColIndex);
-    //         if(!gridsToHighlight.Contains(newGrid))
-    //             gridsToHighlight.Add(newGrid);
-    //     }
-    
-    //     return adjacentGrids;
-    // }
-
 #if UNITY_EDITOR
+    
+    [ContextMenu("Deal 50 dmg to all grids")]
+    public void DealDamageToWholeMap()
+    {
+        foreach (var pair in actorsCoord) {
+            Debug.Log(pair.Key+" has "+pair.Value.gameObject.name);
+        }
+        
+        GridCoordinate currentGrid = new GridCoordinate(0, 0);
+        for (int r = 0; r < numRow; r++) {
+            for (int c = 0; c < numCol; c++) {
+                currentGrid.row = r;
+                currentGrid.col = c;
+                
+                if (!actorsCoord.ContainsKey(currentGrid)) 
+                    continue;     
+                
+                if (actorsCoord[currentGrid] is IDamageable damageable) {
+                    damageable.OnDamageTaken(50f);
+                    Debug.Log("dealing 50 damage to "+actorsCoord[currentGrid].gameObject.name);
+                }
+            }
+        }
+        
+    }
+    
     [ContextMenu("Show GridInfos")]
     public void ShowGridInfos()
     {

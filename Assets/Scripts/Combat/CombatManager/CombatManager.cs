@@ -8,9 +8,8 @@ using UnityEngine;
 public class CombatManager : MonoBehaviour
 {
     [SerializeField] private CinemachineVirtualCamera followCamera;
-    public BattleTerrain battleTerrain;
+    [SerializeField] BattleMap battleMap;
     
-    public static CombatManager Instance { get; private set; }
     private const float ActionTimeLimit = 20f;  // Used to prevent the battle for stuck at an actor forever 
     private const float TurnSmoothingTime = 0.5f;
     
@@ -24,10 +23,6 @@ public class CombatManager : MonoBehaviour
 
     private void Start()
     {
-        //TODO: Need to make sure the instance is not accessed before created
-        if (!Instance)
-            Instance = this;
-        
         registeredActors = new List<TurnBasedActor>();
         turnOrder = new Queue<TurnBasedActor>();
 
@@ -50,7 +45,7 @@ public class CombatManager : MonoBehaviour
     void InitializeLevel()
     {
         ClearPreviousData();
-        battleTerrain.InitializeBattleTerrain();
+        battleMap.InitializeBattleTerrain();
         SpawnTurnBasedActors();
         SortRegisteredActorListBySpeed();
     }
@@ -68,14 +63,16 @@ public class CombatManager : MonoBehaviour
         List<TurnBasedActorSpawningSetting> actorSpawningInfos = LevelConstructionInfoBuffer.Instance.ConsumeTurnBasedActorSpawningInfos();
         foreach (TurnBasedActorSpawningSetting actorSpawningInfo in actorSpawningInfos)
         {
-            Vector3 spawnPos = battleTerrain.GetGridCenterOnNavmeshByCoord(actorSpawningInfo.coordToSpawn);
+            Vector3 spawnPos = battleMap.GetGridCenterOnNavmeshByCoord(actorSpawningInfo.coordToSpawn);
+            GridCoordinate gridCoordinate = battleMap.GetGridCoordByWorldPos(spawnPos);
             Quaternion lookRotation = actorSpawningInfo.orientationSetting.GetLookAtRotationByOrientation();
             
             TurnBasedActor turnBasedActor = Instantiate(actorSpawningInfo.turnBasedActor,spawnPos,lookRotation);
             turnBasedActor.turnBasedActorType = actorSpawningInfo.turnBasedActorType;
             
             RegisterNewTurnBasedActor(turnBasedActor);
-            battleTerrain.SetMoveSetAtGridTo(actorSpawningInfo.coordToSpawn,MoveSetOnGrid.MoveSetType.Obstacle);
+            battleMap.SetMoveSetAtGridTo(actorSpawningInfo.coordToSpawn,MoveSetOnGrid.MoveSetType.Obstacle);
+            battleMap.RegisterTurnBasedActorOnGrid(turnBasedActor,gridCoordinate);
             
             Monster monster = turnBasedActor as Monster;
             if(!monster) continue;

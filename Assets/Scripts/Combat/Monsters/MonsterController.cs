@@ -6,14 +6,17 @@ using UnityEngine;
 using UnityEngine.AI;
 using Random = UnityEngine.Random;
 
-[RequireComponent(typeof(NavMeshAgent))]
+[RequireComponent(typeof(NavMeshAgent),typeof(MonsterAnimator))]
 public class MonsterController : MonoBehaviour
 {
    // Set to false by default. Call EnablePlayerControl to enable the player control
    [HideInInspector] public bool enablePlayerControl {get;private set;} = false;
 
    private const float RayCastDistance = 200f;
+   
+   private BattleMap battleMap = null;
    private Monster controlledMonster;
+   private MonsterAnimator monsterAnimator;
    private Camera mainCamera;
    private NavMeshAgent navMeshAgent;
    private NavMeshPath path;
@@ -21,12 +24,14 @@ public class MonsterController : MonoBehaviour
    private Vector3 gridPosition;
    private bool isAskingPlayerInput = false;
    private bool gotAvailableGridPos = false;
+   private bool gotTargetGridForTheMove = false;
    
    private void Start() {
       path = new NavMeshPath();
       
       navMeshAgent = GetComponent<NavMeshAgent>();
       controlledMonster = GetComponent<Monster>();
+      monsterAnimator = GetComponent<MonsterAnimator>();
       mainCamera = Camera.main;
    }
 
@@ -41,30 +46,30 @@ public class MonsterController : MonoBehaviour
 
    public IEnumerator ProcessMonsterMovementCoroutine()
    {
-      GridCoordinate currentCoord= GetCurrentGridCoord();
+      CacheBattleMapForTheFirstTime();
+      GridCoordinate originalCoord = GetCurrentGridCoord();
 
       if (!enablePlayerControl) {
-         AskForAIMovementInput();   //sync operation
+         AskForAIMovementInput();   //AI
       }else {
-         CombatManager.Instance.battleTerrain.HighlightGridsInRange(currentCoord, controlledMonster.movementRange);
-         yield return StartCoroutine(AskForPlayerMovementInput());   //async operation
+         yield return StartCoroutine(AskForPlayerMovementInput(originalCoord));   //Player
       }
 
-      CombatManager.Instance.battleTerrain.UnregisterActorOnGrid(controlledMonster,currentCoord);
-      CombatManager.Instance.battleTerrain.ReRollMoveSetAtGrid(currentCoord);
-      CombatManager.Instance.battleTerrain.UnHighlightPreviousGrids();
+      yield return StartCoroutine(MoveToGridPositionCoroutine(gridPosition));
+      
+      GridCoordinate finalCoord = GetCurrentGridCoord();
+      yield return PerformMoveSetAtGrid(finalCoord);
 
-      yield return StartCoroutine(MoveToPositionCoroutine(gridPosition));
-      while (!HasReachedPosition(gridPosition)) {
-         yield return null;
-      }
-
-      currentCoord = GetCurrentGridCoord();
-      CombatManager.Instance.battleTerrain.RegisterTurnBasedActorOnGrid(controlledMonster,currentCoord);
-      PerformMoveSetAtCurrentGrid(currentCoord);
+      ReportActionToBattleMap(originalCoord,finalCoord);
       ResetMonsterControllerState();
    }
 
+   private void CacheBattleMapForTheFirstTime()
+   {
+      if (!battleMap)
+         battleMap = BattleMap.Instance;
+   } 
+   
    void HandlePlayerScreenTouchInput()
    {
       if (!Input.GetMouseButtonDown(0))
@@ -72,10 +77,11 @@ public class MonsterController : MonoBehaviour
 
       Vector3 screenToWorldPoint = mainCamera.ScreenToWorldPoint(Input.mousePosition);
       Vector3 direction = mainCamera.transform.rotation * Vector3.forward * 100f;
+      
       Ray ray = new Ray(screenToWorldPoint, RayCastDistance * direction);
       RaycastHit hit;
       Vector3 gridCenter = Vector3.zero;
-      Debug.DrawRay(ray.origin, RayCastDistance * ray.direction, Color.cyan, 3f);
+      //Debug.DrawRay(ray.origin, RayCastDistance * ray.direction, Color.cyan, 3f);
 
       bool hitSomeThing = Physics.Raycast(ray, out hit, RayCastDistance);
       if (!hitSomeThing) {
@@ -86,7 +92,7 @@ public class MonsterController : MonoBehaviour
       GameObject objectHit = hit.transform.gameObject;
       //Debug.Log("ray cast object name = "+objectHit +" with pos = "+objectHit.transform.position);
       if (objectHit.layer.Equals(LayerMask.NameToLayer("TurnBasedGrid"))) {
-         gridCenter = CombatManager.Instance.battleTerrain.GetGridCenterOnNavmeshByWorldPos(objectHit.transform.position);
+         gridCenter = battleMap.GetGridCenterOnNavmeshByWorldPos(objectHit.transform.position);
       }
 
       if (IsValidGrid(gridCenter)) {
@@ -100,57 +106,71 @@ public class MonsterController : MonoBehaviour
       gridPosition = GetRandomReachablePosition(6);
    }
 
-   IEnumerator AskForPlayerMovementInput()
+   IEnumerator AskForPlayerMovementInput(GridCoordinate currentCoord)
    {
+      battleMap.HighlightGridsInRange(currentCoord, controlledMonster.movementRange);
+
       isAskingPlayerInput = true;   //enable the update method to process player input 
       while (!gotAvailableGridPos) {   //Wait until the player clicked a valid grid 
          //Debug.Log("Waiting a valid pos");
          yield return null;
       }
+      battleMap.UnHighlightPreviousGrids();
    }
    
-   private bool IsValidGrid(Vector3 worldPos)
+   bool IsValidGrid(Vector3 worldPos)
    {
       int movementRange = controlledMonster.GetMonsterMovementRange();
-      GridCoordinate targetCoord = CombatManager.Instance.battleTerrain.GetGridCoordByWorldPos(worldPos);
-      GridCoordinate currentCoord = CombatManager.Instance.battleTerrain.GetGridCoordByWorldPos(gameObject.transform.position);
+      GridCoordinate targetCoord = battleMap.GetGridCoordByWorldPos(worldPos);
+      GridCoordinate currentCoord = battleMap.GetGridCoordByWorldPos(gameObject.transform.position);
 
       int manhattanDist = Mathf.Abs(currentCoord.row - targetCoord.row) +
                           Mathf.Abs(currentCoord.col - targetCoord.col);
       if (manhattanDist > movementRange)
          return false;
 
-      if (CombatManager.Instance.battleTerrain.gridMoveSets[targetCoord.row, targetCoord.col] == MoveSetOnGrid.MoveSetType.Obstacle)
+      if (battleMap.gridMoveSets[targetCoord.row, targetCoord.col] == MoveSetOnGrid.MoveSetType.Obstacle)
          return false;
 
       return true;
    }
    
-   IEnumerator MoveToPositionCoroutine(Vector3 position)
+   IEnumerator MoveToGridPositionCoroutine(Vector3 gridPos)
    {
-      //Debug.Log("Moving to "+position);
-      if (!PositionIsReachable(position)) {
-         Debug.Log("Pos "+position+" is not reachable!");
+      if (!PositionIsReachable(gridPos)) {
+         Debug.Log("Pos "+gridPos+" is not reachable!");
          yield break;
       }
       
-      navMeshAgent.destination = position;
-      while (!HasReachedPosition(position)) {
-         yield return new WaitForSeconds(0.2f);;
+      monsterAnimator.SetMovingBool(true);
+      navMeshAgent.destination = gridPos;
+      while (!HasReachedPosition(gridPos)) {
+         yield return null;
       }
+      monsterAnimator.SetMovingBool(false);
+   }
+   
+//TODO:
+
+   IEnumerator PerformMoveSetAtGrid(GridCoordinate coord)
+   {
+      MoveSetOnGrid.MoveSetType moveSet = battleMap.PopMoveSetAtGrid(coord);
+      bool needUserInput = controlledMonster.RequireUserInputForSkill(moveSet);
+      if (!needUserInput) {
+         controlledMonster.CastSkillAtGrid(moveSet, coord);
+         yield break;
+      }
+      
+      yield return null;
    }
 
-
-   void PerformMoveSetAtCurrentGrid(GridCoordinate coord)
+   GridCoordinate GetCurrentGridCoord() => battleMap.GetGridCoordByWorldPos(transform.position);
+   
+   void ReportActionToBattleMap(GridCoordinate originalPos, GridCoordinate finalPos)
    {
-      MoveSetOnGrid.MoveSetType moveSet = CombatManager.Instance.battleTerrain.PopMoveSetAtGrid(coord);
-      controlledMonster.PerformMoveSet(moveSet);
-   }
-
-   GridCoordinate GetCurrentGridCoord()
-   {
-      BattleTerrain battleTerrain = CombatManager.Instance.battleTerrain;
-      return battleTerrain.GetGridCoordByWorldPos(transform.position);
+      battleMap.UnregisterActorOnGrid(controlledMonster,originalPos);
+      battleMap.ReRollMoveSetAtGrid(originalPos);
+      battleMap.RegisterTurnBasedActorOnGrid(controlledMonster,finalPos);
    }
 
    bool PositionIsReachable(Vector3 position)
@@ -162,12 +182,13 @@ public class MonsterController : MonoBehaviour
       return true;
    }
    
-   private bool HasReachedPosition(Vector3 position,float tolerance = 0.5f) => (transform.position - position).magnitude < tolerance;
+   bool HasReachedPosition(Vector3 position,float tolerance = 0.5f) => (transform.position - position).magnitude < tolerance;
    
-   private void ResetMonsterControllerState()
+   void ResetMonsterControllerState()
    {
       isAskingPlayerInput = false;
       gotAvailableGridPos = false;
+      gotTargetGridForTheMove = false;
    }
    
 //NOTE: For Development Testing Only   
@@ -177,7 +198,7 @@ public class MonsterController : MonoBehaviour
       randomPosition.x += Random.insideUnitCircle.x*walkRadius;
       randomPosition.y = 0;
       randomPosition.z += Random.insideUnitCircle.y*walkRadius;
-      return CombatManager.Instance.battleTerrain.GetGridCenterOnNavmeshByWorldPos(randomPosition);
+      return battleMap.GetGridCenterOnNavmeshByWorldPos(randomPosition);
    }
    
 }
