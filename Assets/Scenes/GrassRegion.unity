@@ -1545,6 +1545,22 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4795513292408650746, guid: 19d13df0e41252e4daafc96b015f852c, type: 3}
+      propertyPath: gridCasterHighlight.a
+      value: 0.73333335
+      objectReference: {fileID: 0}
+    - target: {fileID: 4795513292408650746, guid: 19d13df0e41252e4daafc96b015f852c, type: 3}
+      propertyPath: gridCasterHighlight.b
+      value: 0.4026344
+      objectReference: {fileID: 0}
+    - target: {fileID: 4795513292408650746, guid: 19d13df0e41252e4daafc96b015f852c, type: 3}
+      propertyPath: gridCasterHighlight.g
+      value: 0.8672803
+      objectReference: {fileID: 0}
+    - target: {fileID: 4795513292408650746, guid: 19d13df0e41252e4daafc96b015f852c, type: 3}
+      propertyPath: gridCasterHighlight.r
+      value: 0.9811321
+      objectReference: {fileID: 0}
+    - target: {fileID: 4795513292408650746, guid: 19d13df0e41252e4daafc96b015f852c, type: 3}
       propertyPath: gridMovementHighlight.a
       value: 0.6509804
       objectReference: {fileID: 0}

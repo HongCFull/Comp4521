@@ -46,6 +46,7 @@ public class BattleTerrain : MonoBehaviour
     [SerializeField] private Color gridMovementHighlight;
     [SerializeField] private Color gridAttackableHighlight;
     [SerializeField] private Color gridAttackConfirmHighlight;
+    [SerializeField] private Color gridCasterHighlight;
     
     [Tooltip("The maximum number of tiles in the (X-axis)")]
     [SerializeField] private int numCol;
@@ -182,6 +183,14 @@ public class BattleTerrain : MonoBehaviour
 
     public void HighlightSkillTargetGrids(List<GridCoordinate> grids) {
         battleTerrainCanvas.HighlightGrids(grids, gridAttackConfirmHighlight);
+    }
+
+    public void HighlightCasterGrid(GridCoordinate grid) {
+        battleTerrainCanvas.HighlightGrid(grid, gridCasterHighlight);
+    }
+
+    public void UnhighlightGrid(GridCoordinate grid) {
+        battleTerrainCanvas.UnHighlightGrid(grid);
     }
 
     public void UnHighlightPreviousGrids(){

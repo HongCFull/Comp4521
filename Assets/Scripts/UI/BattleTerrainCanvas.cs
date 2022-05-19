@@ -56,6 +56,14 @@ public class BattleTerrainCanvas : MonoBehaviour
                 tileImages[row*numOfCols + col].color = gridDefaultColor;
     }
     
+    public void HighlightGrid(GridCoordinate grid, Color highlightColor)
+    {
+        if(!tileImages[grid.row*numOfCols + grid.col].sprite){
+            tileImages[grid.row*numOfCols + grid.col].color = invisibleGridColor;
+        }
+        tileImages[grid.row*numOfCols + grid.col].color = highlightColor;
+    }
+
     public void HighlightGrids(List<GridCoordinate> grids, Color highlightColor)
     {
         foreach(GridCoordinate grid in grids){
@@ -65,6 +73,13 @@ public class BattleTerrainCanvas : MonoBehaviour
             }
             tileImages[grid.row*numOfCols + grid.col].color = highlightColor;
         }
+    }
+
+    public void UnHighlightGrid(GridCoordinate grid) {
+        if(!tileImages[grid.row*numOfCols + grid.col].sprite){
+            tileImages[grid.row*numOfCols + grid.col].color = invisibleGridColor;
+        }
+        tileImages[grid.row*numOfCols + grid.col].color = gridDefaultColor;
     }
 
     public void UnHighlightGrids(List<GridCoordinate> grids){

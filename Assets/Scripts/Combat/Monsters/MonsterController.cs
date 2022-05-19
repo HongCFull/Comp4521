@@ -69,12 +69,14 @@ public class MonsterController : MonoBehaviour
       SkillAttribute skill = controlledMonster.GetSkillFromMoveSet(moveSet);
       if(skill != null) {
          if(enablePlayerControl) {
+            CombatManager.Instance.battleTerrain.HighlightCasterGrid(currentCoord);
             CombatManager.Instance.battleTerrain.HighlightPotentialSkillTargets(currentCoord, skill);
             List<GridCoordinate> confirmingGrids = new List<GridCoordinate>();
             while(true) {
                ResetMonsterControllerState();
                yield return StartCoroutine(AskForPlayerInput(skill));
                GridCoordinate targetGrid = CombatManager.Instance.battleTerrain.GetGridCoordByWorldPos(gridPosition);
+               CombatManager.Instance.battleTerrain.HighlightCasterGrid(currentCoord);
                CombatManager.Instance.battleTerrain.HighlightPotentialSkillTargets(currentCoord, skill);
 
                if(confirmingGrids.Contains(targetGrid)) {
@@ -107,6 +109,8 @@ public class MonsterController : MonoBehaviour
                   CombatManager.Instance.battleTerrain.HighlightSkillTargetGrids(confirmingGrids);
                }
             }
+            CombatManager.Instance.battleTerrain.UnhighlightGrid(currentCoord);
+
             
          } else {
             AskForAISkillInput(skill);
