@@ -554,7 +554,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   followCamera: {fileID: 695765559}
-  battleTerrain: {fileID: 1386307399}
+  battleMap: {fileID: 1386307399}
 --- !u!4 &281725103
 Transform:
   m_ObjectHideFlags: 0
@@ -714,7 +714,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 2.0068307, y: 1}
+    m_SensorSize: {x: 2.1213872, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -1848,6 +1848,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4795513292582318451, guid: 19d13df0e41252e4daafc96b015f852c, type: 3}
+      propertyPath: battleMap
+      value: 
+      objectReference: {fileID: 1386307399}
     - target: {fileID: 4795513292582318451, guid: 19d13df0e41252e4daafc96b015f852c, type: 3}
       propertyPath: gridDefaultColor.a
       value: 0.16078432

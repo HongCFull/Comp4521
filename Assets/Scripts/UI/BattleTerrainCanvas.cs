@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class BattleTerrainCanvas : MonoBehaviour
 {
-    [SerializeField] private BattleTerrain battleTerrain;
+    [SerializeField] private BattleMap battleMap;
     [SerializeField] private MoveSetOnGrid moveSetOnGridSetting;
     
     [Tooltip("Indexed 0 at the top left corner, increased by col and then row")]

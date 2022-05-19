@@ -7,13 +7,30 @@ using UnityEngine;
 public class MonsterAnimator : MonoBehaviour
 {
     private Animator animator;
+    private int meleeTriggerID;
+    private int rangedTriggerID;
+    private int areaTriggerID;
+    private int hurtTriggerID;
+    private int movingBoolID;
+    private int deadBoolID;
+    
     private void Awake()
     {
         animator = GetComponent<Animator>();
+        meleeTriggerID = Animator.StringToHash("Melee");
+        rangedTriggerID = Animator.StringToHash("Ranged");
+        areaTriggerID = Animator.StringToHash("Area");
+        hurtTriggerID = Animator.StringToHash("Hurt");
+        movingBoolID = Animator.StringToHash("Moving");
+        deadBoolID = Animator.StringToHash("Dead");
     }
 
-    private void Update()
-    {
-        throw new NotImplementedException();
-    }
+    public void SetMeleeTrigger() => animator.SetTrigger(meleeTriggerID);
+    public void SetRangedTrigger()=>animator.SetTrigger(rangedTriggerID);
+    public void SetAreaTrigger()=>animator.SetTrigger(areaTriggerID);
+    public void SetHurtTrigger()=>animator.SetTrigger(hurtTriggerID);
+    public void SetMovingBool(bool isMoving)=>animator.SetBool(movingBoolID,isMoving);
+    public void SetDeadBool(bool isDead)=>animator.SetBool(deadBoolID,isDead);
+
+
 }
