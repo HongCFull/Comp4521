@@ -145,7 +145,10 @@ public class Monster : TurnBasedActor, IClickable, IDamageable
                 Debug.Log("Performing Heal");
                 break;
         }
+    public SkillAttribute GetSkillFromMoveSet(MoveSetOnGrid.MoveSetType moveSet) {
+        return monsterInfo.GetSkillAttribute(moveSet);
     }
+
     
 //=================================================================================================================
 //Protected Methods

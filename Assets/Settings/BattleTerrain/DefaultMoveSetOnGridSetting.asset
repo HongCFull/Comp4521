@@ -19,4 +19,4 @@ MonoBehaviour:
   defenseSprite: {fileID: 21300000, guid: 5833c03e27da44c7da7d88130997fb36, type: 3}
   healSprite: {fileID: 21300000, guid: 0d242cf3ea27f4fad993d21483aa3588, type: 3}
   pickUpSprite: {fileID: 21300000, guid: 56681134adc79482a89c82b4f7895c93, type: 3}
-  obstacleSprite: {fileID: 0}
+  obstacleSprite: {fileID: 21300000, guid: fbb3dc23230cf4d78a51705a80fce95c, type: 3}

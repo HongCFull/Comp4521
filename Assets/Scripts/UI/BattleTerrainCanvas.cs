@@ -11,7 +11,7 @@ public class BattleTerrainCanvas : MonoBehaviour
     [Tooltip("Indexed 0 at the top left corner, increased by col and then row")]
     [SerializeField] List<Image> tileImages;
 
-    [SerializeField] Color gridHighlightColor;
+    // [SerializeField] Color gridHighlightColor;
     [SerializeField] Color gridDefaultColor;
 
     Color invisibleGridColor = new Color(1f,1f,1f,0f);
@@ -56,15 +56,30 @@ public class BattleTerrainCanvas : MonoBehaviour
                 tileImages[row*numOfCols + col].color = gridDefaultColor;
     }
     
-    public void HighlightGrids(List<GridCoordinate> grids)
+    public void HighlightGrid(GridCoordinate grid, Color highlightColor)
+    {
+        if(!tileImages[grid.row*numOfCols + grid.col].sprite){
+            tileImages[grid.row*numOfCols + grid.col].color = invisibleGridColor;
+        }
+        tileImages[grid.row*numOfCols + grid.col].color = highlightColor;
+    }
+
+    public void HighlightGrids(List<GridCoordinate> grids, Color highlightColor)
     {
         foreach(GridCoordinate grid in grids){
             if(!tileImages[grid.row*numOfCols + grid.col].sprite){
                 tileImages[grid.row*numOfCols + grid.col].color = invisibleGridColor;
                 continue;
             }
-            tileImages[grid.row*numOfCols + grid.col].color = gridHighlightColor;
+            tileImages[grid.row*numOfCols + grid.col].color = highlightColor;
         }
+    }
+
+    public void UnHighlightGrid(GridCoordinate grid) {
+        if(!tileImages[grid.row*numOfCols + grid.col].sprite){
+            tileImages[grid.row*numOfCols + grid.col].color = invisibleGridColor;
+        }
+        tileImages[grid.row*numOfCols + grid.col].color = gridDefaultColor;
     }
 
     public void UnHighlightGrids(List<GridCoordinate> grids){

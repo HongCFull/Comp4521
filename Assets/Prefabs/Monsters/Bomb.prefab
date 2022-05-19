@@ -9915,7 +9915,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2733818535838256723}
-  m_Enabled: 0
+  m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 629e310e69885ce44a15ca55050cdbe9, type: 3}
   m_Controller: {fileID: 9100000, guid: 0fb40ce8da2f81044ae9e76a8705897f, type: 2}
   m_CullingMode: 1
@@ -9961,7 +9961,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65c4cefefdae1a2459b9b5de0ff88e4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enablePlayerControl: 0
 --- !u!114 &536077985675614646
 MonoBehaviour:
   m_ObjectHideFlags: 0

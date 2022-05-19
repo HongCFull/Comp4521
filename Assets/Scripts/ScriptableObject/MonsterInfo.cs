@@ -36,6 +36,14 @@ public class MonsterInfo : ScriptableObject
     [SerializeField] private int longRangeAttackRange;
     [SerializeField] private int specialSkillRange;
 
+    [Header("Skills Attributes")]
+    [SerializeField] private SkillAttribute skillMelee;
+    [SerializeField] private SkillAttribute skillRanged;
+    [SerializeField] private SkillAttribute skillArea;
+    [SerializeField] private SkillAttribute skillUltimate;
+    [SerializeField] private SkillAttribute skillDefense;
+    [SerializeField] private SkillAttribute skillHeal;
+
     public bool IsUnlocked => isUnlocked;
     public ElementType ElementType => elementType;
     public int MovementRange => movementRange;
@@ -47,6 +55,28 @@ public class MonsterInfo : ScriptableObject
     public float GetSpeedAtLv(int lv) => baseSpeed + Mathf.Pow(GetLevelRatio(lv),speedGrowthRate);
     private float GetLevelRatio(int lv) => lv > 1 ? Mathf.Sqrt(lv) + 1 : 1;
 
+    public SkillAttribute GetSkillAttribute(MoveSetOnGrid.MoveSetType moveSet) {
+        switch (moveSet) {
+            case MoveSetOnGrid.MoveSetType.Melee:
+                return(skillMelee);
+
+            case MoveSetOnGrid.MoveSetType.Directional:
+                return(skillRanged);
+            
+            case MoveSetOnGrid.MoveSetType.AOE:
+                return(skillArea);
+            
+            case MoveSetOnGrid.MoveSetType.UltimateSkill:
+                return(skillUltimate);
+            
+            case MoveSetOnGrid.MoveSetType.Defense:
+                return(skillDefense);
+            
+            case MoveSetOnGrid.MoveSetType.Heal:
+                return(skillHeal);
+        }
+        return null;
+    }
     public TurnBasedActor GetTurnBasedActorPrefab() => monsterPrefab;
 
     public Sprite GetPreviewImage() => monsterPreviewImage;

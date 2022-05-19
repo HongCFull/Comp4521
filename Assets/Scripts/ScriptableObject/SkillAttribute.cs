@@ -5,7 +5,8 @@ using UnityEngine;
 public class SkillAttribute : ScriptableObject{
     public enum TargetType {
         Single,
-        Multiple
+        Directional,
+        Centered
     }
     public TargetType targetType;
     public enum SkillType {
