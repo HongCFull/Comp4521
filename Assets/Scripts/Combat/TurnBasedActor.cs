@@ -3,7 +3,8 @@ using UnityEngine;
 
 public enum TurnBasedActorType
 {
-    FriendlyMonster,
+    FriendlyControllableMonster,
+    FriendlyUncontrollableMonster,
     EnemyMonster,
     Other
 }
@@ -12,7 +13,10 @@ public enum TurnBasedActorType
 public abstract class TurnBasedActor : MonoBehaviour
 {
     [HideInInspector] public TurnBasedActorType turnBasedActorType;
+    [SerializeField] protected TurnBasedActorCanvas turnBasedActorCanvas;
 
+    public abstract TurnBasedActorType InitializeActorAs(TurnBasedActorType type);
+    
     // The speed of this turn based actor. Actor with higher speed has a higher priority to execute the action   
     public float Speed { get; private set; }
     

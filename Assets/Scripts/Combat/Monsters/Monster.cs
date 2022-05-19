@@ -9,13 +9,16 @@ using UnityEngine.Serialization;
 public class Monster : TurnBasedActor, IClickable, IDamageable
 {
     [SerializeField] private MonsterInfo monsterInfo;
-    public MonsterController monsterController;
-    private float maxHp;
-    private float currentHP;
-    private float attack;
-    private float defense;
-    private float speed;
-    private int level;
+    [SerializeField] MonsterController monsterController;
+    
+    public float maxHp {get; private set;}
+    public float currentHP {get; private set;}
+    public float attack {get; private set;}
+    public float defense {get; private set;}
+    public float speed {get; private set;}
+    public int movementRange {get; private set;}
+    public ElementType elementType {get; private set;}
+    public int level {get; private set;}
     private Animator animator;
 
     protected virtual void Awake()
@@ -32,15 +35,38 @@ public class Monster : TurnBasedActor, IClickable, IDamageable
 //=================================================================================================================
 //Public Methods
 //=================================================================================================================
+    public override TurnBasedActorType InitializeActorAs(TurnBasedActorType type)
+    {
+        if(type==TurnBasedActorType.FriendlyControllableMonster) {
+            monsterController.EnablePlayerControl();
+        }
+        
+        turnBasedActorCanvas.EnableHealthBarByActorType(type);
+        return type;
+    }
+    
     public void InitializeAttributesByLv(int lv)
     {
         maxHp = monsterInfo.GetHealthPointAtLv(lv);
+        currentHP = maxHp;
         attack = monsterInfo.GetAttackAtLv(lv);
         defense = monsterInfo.GetDefenseAtLv(lv);
         speed = monsterInfo.GetSpeedAtLv(lv);
-        currentHP = maxHp;
+
+        movementRange = monsterInfo.MovementRange;
+        elementType = monsterInfo.ElementType;
+
         UpdateTurnBasedActorSpeed(speed);
     }
+
+    public override void OnActorTurnStart()
+    {
+        base.OnActorTurnStart();
+        
+        StartCoroutine(StartActionsCoroutine());
+    }
+    
+    public override void OnActorTurnEnd(){ }
     
     public void OnClickDown()
     {
@@ -52,19 +78,12 @@ public class Monster : TurnBasedActor, IClickable, IDamageable
         //TODO: Hide the statistic of this monster
     }
     
-    public override void OnActorTurnStart()
-    {
-        base.OnActorTurnStart();
-        
-        StartCoroutine(StartActionsCoroutine());
-    }
-    
-    public override void OnActorTurnEnd()
-    { }
-
-    public void OnDamageTaken(int damage)
+    public void OnDamageTaken(float damage)
     {
         currentHP -= damage;
+        float UIFillPercentage = Mathf.Clamp(currentHP / maxHp, 0, 1);
+        turnBasedActorCanvas.activeHealthBar.SetFillByPercentage(UIFillPercentage);
+        
         if (currentHP <= 0) {
             OnDeath();
         }
@@ -72,42 +91,17 @@ public class Monster : TurnBasedActor, IClickable, IDamageable
 
     public void OnDeath()
     {
-        throw new NotImplementedException();
+        Debug.Log("Monster:"+gameObject.name+" dead");
     }
 
     public MonsterController GetMonsterController() => monsterController;
 
     public int GetMonsterMovementRange() => monsterInfo.MovementRange;
 
-    public void PerformMoveSet(GridMoveSet moveSet)
-    {
-        switch (moveSet)
-        {
-            case GridMoveSet.MeleeAttack:
-                Debug.Log("Performing SkillA");
-                break;
-            
-            case GridMoveSet.LongRangeAttack:
-                Debug.Log("Performing SkillB");
-                break;
-            
-            case GridMoveSet.SpecialSkill:
-                Debug.Log("Performing SkillC");
-                break;
-            
-            case GridMoveSet.UltimateSkill:
-                Debug.Log("Performing SkillD");
-                break;
-            
-            case GridMoveSet.Defense:
-                Debug.Log("Performing Defense");
-                break;
-            
-            case GridMoveSet.Heal:
-                Debug.Log("Performing Heal");
-                break;
-        }
+    public SkillAttribute GetSkillFromMoveSet(MoveSetOnGrid.MoveSetType moveSet) {
+        return monsterInfo.GetSkillAttribute(moveSet);
     }
+
     
 //=================================================================================================================
 //Protected Methods
@@ -118,8 +112,8 @@ public class Monster : TurnBasedActor, IClickable, IDamageable
     {
         yield return StartCoroutine(monsterController.ProcessMonsterMovementCoroutine());
         
-        Debug.Log("playing attack animation for 2sec");
-        animator.SetTrigger("Melee");
+        // Debug.Log("playing attack animation for 2sec");
+        // animator.SetTrigger("Melee");
         
         yield return new WaitForSeconds(2f);
         SetHasExecutedActions();  
@@ -129,4 +123,11 @@ public class Monster : TurnBasedActor, IClickable, IDamageable
 //Private Methods
 //=================================================================================================================
     
+//=================================================================================================================
+//For development 
+//=================================================================================================================
+    [ContextMenu("Deal 20 damage to this enemy")]
+    public void Deal20DamageToThisEnemy() {
+        OnDamageTaken(20f);
+    }
 }
