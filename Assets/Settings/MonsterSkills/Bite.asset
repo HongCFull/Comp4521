@@ -15,6 +15,7 @@ MonoBehaviour:
   targetType: 0
   skillType: 0
   animationType: 0
+  requireUserInput: 1
   affectedTiles:
   - {x: 0, y: 1}
   - {x: 0, y: 2}

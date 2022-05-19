@@ -104,19 +104,16 @@ public class Monster : TurnBasedActor, IClickable, IDamageable
         switch (moveSetType)
         {
             case MoveSetOnGrid.MoveSetType.Melee:
-                return true;    //skill attribute->needInput
             case MoveSetOnGrid.MoveSetType.Directional:
-                return true;
             case MoveSetOnGrid.MoveSetType.AOE:
-                return true;
             case MoveSetOnGrid.MoveSetType.UltimateSkill:
-                return true;
+                return monsterInfo.GetSkillAttribute(moveSetType).requireUserInput;
         }
         return false;
     } 
 
 //TODO:
-    public void CastSkillAtGrid(MoveSetOnGrid.MoveSetType moveSet,GridCoordinate gridCoord)
+    public void CastSkillAtGrid(MoveSetOnGrid.MoveSetType moveSet, GridCoordinate gridCoord)
     {
         List<GridCoordinate> gridsToDamage = new List<GridCoordinate>();
         switch (moveSet)
@@ -124,27 +121,29 @@ public class Monster : TurnBasedActor, IClickable, IDamageable
             case MoveSetOnGrid.MoveSetType.Melee:
                 Debug.Log("Performing SkillA");
                 break;
-            
+
             case MoveSetOnGrid.MoveSetType.Directional:
                 Debug.Log("Performing SkillB");
                 break;
-            
+
             case MoveSetOnGrid.MoveSetType.AOE:
                 Debug.Log("Performing SkillC");
                 break;
-            
+
             case MoveSetOnGrid.MoveSetType.UltimateSkill:
                 Debug.Log("Performing SkillD");
                 break;
-            
+
             case MoveSetOnGrid.MoveSetType.Defense:
                 Debug.Log("Performing Defense");
                 break;
-            
+
             case MoveSetOnGrid.MoveSetType.Heal:
                 Debug.Log("Performing Heal");
                 break;
         }
+    }
+
     public SkillAttribute GetSkillFromMoveSet(MoveSetOnGrid.MoveSetType moveSet) {
         return monsterInfo.GetSkillAttribute(moveSet);
     }

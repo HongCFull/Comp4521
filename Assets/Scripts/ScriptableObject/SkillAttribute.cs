@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Grid = System.Windows.Forms.DataVisualization.Charting.Grid;
 
 [CreateAssetMenu(fileName = "New Skill", menuName = "ScriptableObjects/SkillAttribute", order = 1)]
 public class SkillAttribute : ScriptableObject{
@@ -8,20 +9,23 @@ public class SkillAttribute : ScriptableObject{
         Directional,
         Centered
     }
-    public TargetType targetType;
     public enum SkillType {
         Attack,
         Buff,
         Heal
     }
-    public SkillType skillType;
     public enum AnimationType {
         Melee,
         Ranged,
         Areal,
         Buff
     }
+    
+    public TargetType targetType;
+    public SkillType skillType;
     public AnimationType animationType;
+    public bool requireUserInput;
+    
     public List<Vector2Int> affectedTiles = new List<Vector2Int>();
     public List<Vector2Int> RotatedTargetTiles(int rotatedQuadrants) {
         // Quadrant 0: unrotated
@@ -57,5 +61,19 @@ public class SkillAttribute : ScriptableObject{
             tiles.Add(tile + casterPosition);
         }
         return tiles;
+    }
+
+    public List<GridCoordinate> GetPotentialCastingPoint(GridCoordinate center,int numOfRowInMap,int numOfColInMap)
+    {
+        List<GridCoordinate> validCastGrids = new List<GridCoordinate>();
+        for(int i = 0; i < 4; i++) {
+            foreach(Vector2Int target in RotatedTargetTiles(i)) {
+                int row = center.row + target.x;
+                int col = center.col + target.y;
+                if(row>0 && row<numOfRowInMap && col>0 && col<numOfColInMap)
+                    validCastGrids.Add(new GridCoordinate(row,col));
+            }
+        }
+        return validCastGrids;
     }
 }

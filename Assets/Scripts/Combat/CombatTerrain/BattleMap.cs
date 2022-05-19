@@ -70,8 +70,12 @@ public class BattleMap : MonoBehaviour
     public Dictionary<GridCoordinate, TurnBasedActor> actorsCoord;
 
     private MoveSetType[] stretchedGridMoveSets;
-    private List<GridCoordinate> gridsToHighlight;
+    
+    private List<GridCoordinate> walkableGridsToHighlight;
+    private List<GridCoordinate> potentialCastGridsToHighlight;
+    private List<GridCoordinate> confirmingGridsToHighlight;
 
+    
     private float cellWidth;    //x
     private float cellHeight;   //y
     private float cellLength;   //z
@@ -80,11 +84,15 @@ public class BattleMap : MonoBehaviour
     {
         if (!Instance)
             Instance = this;
+        
         gridMoveSets = new MoveSetType[numRow,numCol];
         stretchedGridMoveSets = new MoveSetType[numRow * numCol];
         actorsCoord = new Dictionary<GridCoordinate, TurnBasedActor>();
-        gridsToHighlight = new List<GridCoordinate>();
-
+        
+        walkableGridsToHighlight = new List<GridCoordinate>();
+        potentialCastGridsToHighlight = new List<GridCoordinate>();
+        confirmingGridsToHighlight = new List<GridCoordinate>();
+        
         cellWidth = gridInfo.cellSize.x;
         cellHeight = gridInfo.cellSize.y;
         cellLength = gridInfo.cellSize.z;
@@ -101,6 +109,9 @@ public class BattleMap : MonoBehaviour
         InitializeMoveSetUIOnGrids();
     }
 
+    public int GetNumOfRow() => numRow;
+    public int GetNumOfCol() => numCol;
+    
     public MoveSetType PopMoveSetAtGrid(GridCoordinate coord)
     {
         MoveSetType moveSet = gridMoveSets[coord.row, coord.col];
@@ -168,25 +179,46 @@ public class BattleMap : MonoBehaviour
         actorsCoord.Remove(coordinate);
         //Debug.Log("Unregistered actor : "+actor.gameObject.name+" in coord "+coordinate);
     }
-
-    public void HighlightGridsInRange(GridCoordinate center, int range){
+    
+//===========================================================================================================================    
+//Highlights:
+//===========================================================================================================================
+    //Walkable Grids
+    public void HighlightWalkableGridsInRange(GridCoordinate center, int range){
         //Debug.Log("BFS at "+center);
-        gridsToHighlight.Clear();
+        walkableGridsToHighlight.Clear();
         //UpdateGridsToHighlightByBFS(center, range);
         UpdateGridsToHighlightBruteForce(center,range);
-        battleTerrainCanvas.HighlightGrids(gridsToHighlight, gridMovementHighlight);
+        battleTerrainCanvas.HighlightGrids(walkableGridsToHighlight, gridMovementHighlight);
+    }
+    public void UnHighlightWalkableGrids(){
+        battleTerrainCanvas.UnHighlightGrids(walkableGridsToHighlight);
+        walkableGridsToHighlight.Clear();
     }
 
-    public void HighlightPotentialSkillTargets(GridCoordinate center, SkillAttribute skill) {
-        gridsToHighlight.Clear();
-        for(int i = 0; i < 4; i++) {
-            foreach(Vector2Int target in skill.RotatedTargetTiles(i)) {
-                gridsToHighlight.Add(new GridCoordinate(center.row + target.x, center.col + target.y));
-            }
-        }
-        battleTerrainCanvas.HighlightGrids(gridsToHighlight, gridAttackableHighlight);
+    //Potential Casting Grids
+    public void HighlightPotentialCastingGrid(List<GridCoordinate> potentialCastingGrids) {
+        Debug.Log("Highlight potential casting grid");
+        potentialCastGridsToHighlight.Clear();
+        potentialCastGridsToHighlight = new List<GridCoordinate>(potentialCastingGrids);
+        battleTerrainCanvas.HighlightGrids(potentialCastGridsToHighlight, gridAttackableHighlight);
     }
-
+    public void UnHighlightPotentialCastingGrids(){
+        battleTerrainCanvas.UnHighlightGrids(potentialCastGridsToHighlight);
+        potentialCastGridsToHighlight.Clear();
+    }
+    
+    //Confirming Grids
+    public void HighlightConfirmingGrids(List<GridCoordinate> confirmingGrids) {
+        confirmingGridsToHighlight.Clear();
+        confirmingGridsToHighlight = new List<GridCoordinate>(confirmingGrids);
+        battleTerrainCanvas.HighlightGrids(confirmingGridsToHighlight, gridAttackConfirmHighlight);
+    }
+    public void UnHighlightConfirmingGrids(){
+        battleTerrainCanvas.UnHighlightGrids(confirmingGridsToHighlight);
+        confirmingGridsToHighlight.Clear();
+    }
+    
     public void HighlightSkillTargetGrids(List<GridCoordinate> grids) {
         battleTerrainCanvas.HighlightGrids(grids, gridAttackConfirmHighlight);
     }
@@ -198,11 +230,7 @@ public class BattleMap : MonoBehaviour
     public void UnhighlightGrid(GridCoordinate grid) {
         battleTerrainCanvas.UnHighlightGrid(grid);
     }
-
-    public void UnHighlightPreviousGrids(){
-        battleTerrainCanvas.UnHighlightGrids(gridsToHighlight);
-        gridsToHighlight.Clear();
-    }
+    
 
     public void DealDamageToGrids(List<GridCoordinate> gridCoordinates, float damage)
     {
@@ -217,7 +245,7 @@ public class BattleMap : MonoBehaviour
         }
     }
 
-///======================================================================================================================================================
+    ///======================================================================================================================================================
 ///Private Method:
 ///======================================================================================================================================================
 
@@ -303,7 +331,7 @@ public class BattleMap : MonoBehaviour
                 int manhattanDist = Mathf.Abs(rowIndex-start.row) + Mathf.Abs(colIndex-start.col);
                 if(manhattanDist<=range){
                     GridCoordinate thisGrid = new GridCoordinate(rowIndex,colIndex);
-                    gridsToHighlight.Add(thisGrid);
+                    walkableGridsToHighlight.Add(thisGrid);
                 } 
             }
         }
