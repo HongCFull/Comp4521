@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1037683815117",
+    "project_id": "project-evo-83eac",
+    "storage_bucket": "project-evo-83eac.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1037683815117:android:d6d0e66b3f9be4b9a12f84",
+        "android_client_info": {
+          "package_name": "com.HongCFull.projectEVO"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1037683815117-ae57b9qh49bvl4jj768dl255nptcnfpp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDQnj1vMd-CJ0C2-aaIpxsVOJwMzRRqDuc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1037683815117-ae57b9qh49bvl4jj768dl255nptcnfpp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
