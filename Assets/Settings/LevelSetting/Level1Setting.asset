@@ -31,11 +31,3 @@ MonoBehaviour:
     orientationSetting:
       orientation: 3
     monsterLv: 1
-  - turnBasedActorType: 2
-    turnBasedActor: {fileID: 3560825326631767605, guid: b5991c09f27eb0d4c81107102622ad09, type: 3}
-    coordToSpawn:
-      row: 5
-      col: 5
-    orientationSetting:
-      orientation: 3
-    monsterLv: 3

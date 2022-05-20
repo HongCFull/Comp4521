@@ -19,13 +19,15 @@ public class Monster : TurnBasedActor, IClickable, IDamageable
     public int movementRange {get; private set;}
     public ElementType elementType {get; private set;}
     public int level {get; private set;}
-    private Animator animator;
-
+    
+    private MonsterAnimator monsterAnimator;
+    private List<GridCoordinate> cachedGridsToDamage = new List<GridCoordinate>();
+    private SkillAttribute cachedSkill;
     protected virtual void Awake()
     {
         //TODO: Update the battle attribute of this instance according to the level
         UpdateTurnBasedActorSpeed(speed);
-        animator = GetComponent<Animator>();
+        monsterAnimator = GetComponent<MonsterAnimator>();
     }
 
     protected virtual void Start()
@@ -77,28 +79,39 @@ public class Monster : TurnBasedActor, IClickable, IDamageable
     {
         //TODO: Hide the statistic of this monster
     }
+
+    public void HealByPercentage(float percentage)
+    {
+        float hpToHeal = maxHp * percentage/100;
+        currentHP = Mathf.Clamp(currentHP + hpToHeal, 0, maxHp);
+        turnBasedActorCanvas.activeHealthBar.SetFillByPercentage(currentHP/maxHp);
+    }
     
     public void OnDamageTaken(float damage)
     {
         currentHP -= damage;
         float UIFillPercentage = Mathf.Clamp(currentHP / maxHp, 0, 1);
         turnBasedActorCanvas.activeHealthBar.SetFillByPercentage(UIFillPercentage);
-        
+        Debug.Log(name+" taken dmg "+damage);
         if (currentHP <= 0) {
             OnDeath();
+            return;
         }
+        monsterAnimator.SetHurtTrigger();
     }
 
     public void OnDeath()
     {
         Debug.Log("Monster:"+gameObject.name+" dead");
+        monsterAnimator.SetDeadBool(true);
+        combatManager.ReportDeath(this);
+        Destroy(this.gameObject,2f);
     }
 
     public MonsterController GetMonsterController() => monsterController;
 
     public int GetMonsterMovementRange() => monsterInfo.MovementRange;
 
-//TODO:
     public bool RequireUserInputForSkill(MoveSetOnGrid.MoveSetType moveSetType)
     {
         switch (moveSetType)
@@ -107,48 +120,65 @@ public class Monster : TurnBasedActor, IClickable, IDamageable
             case MoveSetOnGrid.MoveSetType.Directional:
             case MoveSetOnGrid.MoveSetType.AOE:
             case MoveSetOnGrid.MoveSetType.UltimateSkill:
-                return monsterInfo.GetSkillAttribute(moveSetType).requireUserInput;
+                return monsterInfo.GetSkillAttribute(moveSetType).RequireUserInput;
         }
         return false;
     } 
 
 //TODO:
-    public void CastSkillAtGrid(MoveSetOnGrid.MoveSetType moveSet, GridCoordinate gridCoord)
+    public void PerformSkillToGrids(MoveSetOnGrid.MoveSetType moveSet, List<GridCoordinate> gridsToCastSkill)
     {
-        List<GridCoordinate> gridsToDamage = new List<GridCoordinate>();
+        Debug.Log("cached grids to damage : ");
+        cachedGridsToDamage = new List<GridCoordinate>(gridsToCastSkill);
+        foreach (var VARIABLE in cachedGridsToDamage)
+        {
+            Debug.Log("recorded "+VARIABLE+" to damage");
+        }
+        cachedSkill = GetSkillFromMoveSet(moveSet);
         switch (moveSet)
         {
             case MoveSetOnGrid.MoveSetType.Melee:
-                Debug.Log("Performing SkillA");
-                break;
+                Debug.Log("Melee");
+                monsterAnimator.SetMeleeTrigger();
+                battleMap.DealDamageToGrids(cachedGridsToDamage, cachedSkill.Damage);                break;
 
             case MoveSetOnGrid.MoveSetType.Directional:
-                Debug.Log("Performing SkillB");
-                break;
+                Debug.Log("Directional");
+                monsterAnimator.SetRangedTrigger();
+                battleMap.DealDamageToGrids(cachedGridsToDamage, cachedSkill.Damage);                break;
 
             case MoveSetOnGrid.MoveSetType.AOE:
-                Debug.Log("Performing SkillC");
-                break;
+                Debug.Log("AOE");
+                monsterAnimator.SetAreaTrigger();
+                battleMap.DealDamageToGrids(cachedGridsToDamage, cachedSkill.Damage);                break;
 
             case MoveSetOnGrid.MoveSetType.UltimateSkill:
-                Debug.Log("Performing SkillD");
-                break;
+                Debug.Log("ULT");
+                monsterAnimator.SetUltimateSkillTrigger();
+                battleMap.DealDamageToGrids(cachedGridsToDamage, cachedSkill.Damage);                break;
 
             case MoveSetOnGrid.MoveSetType.Defense:
-                Debug.Log("Performing Defense");
+                Debug.Log("Def");
+                monsterAnimator.SetBuffTrigger();
                 break;
 
             case MoveSetOnGrid.MoveSetType.Heal:
-                Debug.Log("Performing Heal");
+                Debug.Log("Heal");
+                HealByPercentage(25f);
+                monsterAnimator.SetBuffTrigger();
                 break;
         }
     }
 
-    public SkillAttribute GetSkillFromMoveSet(MoveSetOnGrid.MoveSetType moveSet) {
-        return monsterInfo.GetSkillAttribute(moveSet);
-    }
+    public SkillAttribute GetSkillFromMoveSet(MoveSetOnGrid.MoveSetType moveSet)=> monsterInfo.GetSkillAttribute(moveSet);
 
-    
+    /// <summary>
+    /// Called by the animation event
+    /// </summary>
+    public void DealDamageCachedGrids()
+    {
+        //BattleMap.Instance.DealDamageToGrids(cachedGridsToDamage, cachedSkill.Damage);
+    }
 //=================================================================================================================
 //Protected Methods
 //=================================================================================================================
@@ -157,10 +187,7 @@ public class Monster : TurnBasedActor, IClickable, IDamageable
     protected override IEnumerator StartActionsCoroutine()
     {
         yield return StartCoroutine(monsterController.ProcessMonsterMovementCoroutine());
-        
-        Debug.Log("playing attack animation for 2sec");
-        animator.SetTrigger("Melee");
-        
+
         yield return new WaitForSeconds(2f);
         SetHasExecutedActions();  
     }

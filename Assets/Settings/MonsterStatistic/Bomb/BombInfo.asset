@@ -32,6 +32,6 @@ MonoBehaviour:
   skillMelee: {fileID: 11400000, guid: dcfa753250251f647b1bf56a7f7d892a, type: 2}
   skillRanged: {fileID: 11400000, guid: 98e1832360359174894e947472f81857, type: 2}
   skillArea: {fileID: 11400000, guid: 1b75c43b15827174683277ffb60bcc76, type: 2}
-  skillUltimate: {fileID: 0}
-  skillDefense: {fileID: 0}
-  skillHeal: {fileID: 0}
+  skillUltimate: {fileID: 11400000, guid: 804d8c3d29ab9a84bae4c1b7ca266ad9, type: 2}
+  skillDefense: {fileID: 11400000, guid: a32804767979b3f4f8f5a082063fa8f9, type: 2}
+  skillHeal: {fileID: 11400000, guid: 1cf5582c0b0b51d4ba5e1a6e62473365, type: 2}

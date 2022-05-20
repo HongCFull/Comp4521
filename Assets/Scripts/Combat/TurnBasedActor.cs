@@ -12,9 +12,12 @@ public enum TurnBasedActorType
 
 public abstract class TurnBasedActor : MonoBehaviour
 {
-    [HideInInspector] public TurnBasedActorType turnBasedActorType;
     [SerializeField] protected TurnBasedActorCanvas turnBasedActorCanvas;
-
+    
+    [HideInInspector] public TurnBasedActorType turnBasedActorType;
+    [HideInInspector] public CombatManager combatManager;
+    [HideInInspector] public BattleMap battleMap;
+    
     public abstract TurnBasedActorType InitializeActorAs(TurnBasedActorType type);
     
     // The speed of this turn based actor. Actor with higher speed has a higher priority to execute the action   

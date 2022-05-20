@@ -21,12 +21,19 @@ public class SkillAttribute : ScriptableObject{
         Buff
     }
     
-    public TargetType targetType;
-    public SkillType skillType;
-    public AnimationType animationType;
-    public bool requireUserInput;
-    
-    public List<Vector2Int> affectedTiles = new List<Vector2Int>();
+    [SerializeField] TargetType targetType;
+    [SerializeField] SkillType skillType;
+    [SerializeField] AnimationType animationType;
+    [SerializeField] bool requireUserInput;
+    [SerializeField] float damage;    //for testing
+    [SerializeField] List<Vector2Int> affectedTiles = new List<Vector2Int>();
+
+    public bool RequireUserInput => requireUserInput;
+    public float Damage => damage;
+    public TargetType GetTargetType() => targetType;
+    public SkillType GetSkillType() => skillType;
+    public AnimationType GetAnimationType() => animationType;
+
     public List<Vector2Int> RotatedTargetTiles(int rotatedQuadrants) {
         // Quadrant 0: unrotated
         // Quadrant 1: Anti-Clockwise 90 degrees
@@ -70,7 +77,7 @@ public class SkillAttribute : ScriptableObject{
             foreach(Vector2Int target in RotatedTargetTiles(i)) {
                 int row = center.row + target.x;
                 int col = center.col + target.y;
-                if(row>0 && row<numOfRowInMap && col>0 && col<numOfColInMap)
+                if(row>=0 && row<numOfRowInMap && col>=0 && col<numOfColInMap)
                     validCastGrids.Add(new GridCoordinate(row,col));
             }
         }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Analytics;
 using Grid = System.Windows.Forms.DataVisualization.Charting.Grid;
 using Random = UnityEngine.Random;
 
@@ -11,7 +12,7 @@ using Random = UnityEngine.Random;
 public class MonsterController : MonoBehaviour
 {
    // Set to false by default. Call EnablePlayerControl to enable the player control
-   [HideInInspector] public bool enablePlayerControl {get;private set;} = false;
+   [HideInInspector] public bool enablePlayerControl {get; private set;} = false;
 
    private const float RayCastDistance = 200f;
    
@@ -22,7 +23,6 @@ public class MonsterController : MonoBehaviour
    private NavMeshAgent navMeshAgent;
    private NavMeshPath path;
 
-   
    private bool isAskingPlayerMovementInput = false;
    private bool gotWalkableGridPos = false;
    private Vector3 targetGridForMovement;
@@ -37,12 +37,13 @@ public class MonsterController : MonoBehaviour
    
    private List<GridCoordinate> potentialCastingGrids;
    private List<GridCoordinate> confirmingGrids;
-
+   private List<GridCoordinate> aiAttackTargets;
 
    private void Start() {
       path = new NavMeshPath();
       potentialCastingGrids = new List<GridCoordinate>();
       confirmingGrids = new List<GridCoordinate>();
+      aiAttackTargets = new List<GridCoordinate>();
       
       navMeshAgent = GetComponent<NavMeshAgent>();
       controlledMonster = GetComponent<Monster>();
@@ -70,7 +71,7 @@ public class MonsterController : MonoBehaviour
       GridCoordinate originalCoord = GetCurrentGridCoord();
 
       if (!enablePlayerControl) {
-         AskForAIMovementInput();   //AI
+         AskForAIMovementInput(originalCoord);   //AI
       }else {
          yield return StartCoroutine(AskForPlayerMovementInput(originalCoord));   //Player
       }
@@ -89,7 +90,7 @@ public class MonsterController : MonoBehaviour
    void CacheBattleMapForTheFirstTime()
    {
       if (!battleMap)
-         battleMap = BattleMap.Instance;
+         battleMap = controlledMonster.battleMap;
    } 
    
    void HandlePlayerScreenTouchInputForMovement()
@@ -168,7 +169,6 @@ public class MonsterController : MonoBehaviour
 
          //Player swapped target to attack
          if (!IsClickingOnConfirmingGrids(clickedGrid) && IsValidCastGrid(gridCenter)) {
-            Debug.Log("player changed target");
             firstCastConfirmedGrid = clickedGrid;
             isAskingPlayerSecondCastConfirm = false;
             isTargetChanged = true; //this need to be the last in the if statement
@@ -190,8 +190,22 @@ public class MonsterController : MonoBehaviour
       //AI is performing 
       if (!enablePlayerControl) {
          AskForAISkillInput(skill);
-         //controlledMonster.CastSkillAtGrid(moveSet, coord);
-         yield break;
+         if (needUserInput) {
+            List<TurnBasedActorType> actorsToExclude = new List<TurnBasedActorType>();
+            actorsToExclude.Add(TurnBasedActorType.EnemyMonster);
+            
+            TrimOutNonDamageTarget(aiAttackTargets,actorsToExclude);
+            foreach (var VARIABLE in aiAttackTargets) {
+               Debug.Log("final target grid "+VARIABLE);
+            }
+
+            controlledMonster.PerformSkillToGrids(moveSet, aiAttackTargets);
+            yield break;
+         }
+         else {
+            controlledMonster.PerformSkillToGrids(moveSet,skill.GetPotentialCastingPoint(targetGrid,battleMap.GetNumOfRow(),battleMap.GetNumOfCol()));
+         }
+         
       }
 
       //Player is performing
@@ -200,11 +214,13 @@ public class MonsterController : MonoBehaviour
          battleMap.HighlightCasterGrid(targetGrid);
          battleMap.HighlightPotentialCastingGrid(potentialCastingGrids);
          yield return StartCoroutine(AskForFirstPlayerSkillInputConfirm(skill,targetGrid));
-         yield return StartCoroutine(AskForSecondPlayerSkillInputConfirm(skill,targetGrid));
+         yield return StartCoroutine(AskForSecondPlayerSkillInputConfirm(moveSet,skill,targetGrid));
+         battleMap.UnhighlightGrid(targetGrid);
       }
       else {
-         
+         controlledMonster.PerformSkillToGrids(moveSet,skill.GetPotentialCastingPoint(targetGrid,battleMap.GetNumOfRow(),battleMap.GetNumOfCol()));
       }
+  
    }
    IEnumerator MoveToGridPositionCoroutine(Vector3 gridPos)
    {
@@ -224,9 +240,9 @@ public class MonsterController : MonoBehaviour
 //==============================================================================================================================
 //Input Request
 //==============================================================================================================================
-   void AskForAIMovementInput()
+   void AskForAIMovementInput(GridCoordinate currentPos)
    {
-      targetGridForMovement = GetRandomReachablePosition(6);
+      targetGridForMovement = GetOneGridForAIMovement(currentPos,controlledMonster.GetMonsterMovementRange());
    }
 
    IEnumerator AskForPlayerMovementInput(GridCoordinate currentCoord)
@@ -244,15 +260,40 @@ public class MonsterController : MonoBehaviour
    }
    
    void AskForAISkillInput(SkillAttribute skill) {
+      GridCoordinate currentCoord = battleMap.GetGridCoordByWorldPos(transform.position);
+      Debug.Log("Ai walked to grid:"+currentCoord +" to perform skill:"+skill.name);
+      if (skill.GetSkillType()==SkillAttribute.SkillType.Attack)
+      {
+         float maxDamage = 0f;
+         List<GridCoordinate> potentTargets = skill.GetPotentialCastingPoint(currentCoord, battleMap.GetNumOfRow(), battleMap.GetNumOfCol());
+         Debug.Log("Ai potential target = "+potentTargets.Count);
+         // foreach (var VARIABLE in potentTargets) {
+         //    Debug.Log("AI potential grid = "+VARIABLE);
+         // }
+         foreach (var potentTarget in potentTargets) {
+            float totalDmgDealInThisGrid = 0f;
+            firstCastConfirmedGrid = potentTarget;
+            UpdateConfirmingGrids(skill, currentCoord);
+            Debug.Log("there are "+confirmingGrids.Count+" confirming grids at potential gird "+potentTarget);
+            foreach (var target in confirmingGrids) {
+               if (!battleMap.actorsCoord.ContainsKey(target))
+                  continue;
 
-      GridCoordinate currentCoord = battleMap.GetGridCoordByWorldPos(gameObject.transform.position);
-      List<GridCoordinate> potentialTargets = new List<GridCoordinate>();
-      for(int i = 0; i < 4; i++) {
-         foreach(Vector2Int target in skill.RotatedTargetTiles(i)) {
-            potentialTargets.Add(new GridCoordinate(currentCoord.row + target.x, currentCoord.col + target.y));
+               if (battleMap.actorsCoord[target].turnBasedActorType == TurnBasedActorType.FriendlyControllableMonster ||
+                   battleMap.actorsCoord[target].turnBasedActorType == TurnBasedActorType.FriendlyUncontrollableMonster) {
+                  totalDmgDealInThisGrid += skill.Damage;
+               }
+            }
+
+            if (totalDmgDealInThisGrid > maxDamage) {
+               maxDamage = totalDmgDealInThisGrid;
+               aiAttackTargets = new List<GridCoordinate>(confirmingGrids);
+               foreach (var grid in aiAttackTargets) {
+                  Debug.Log("AI selected:" +grid+" to attack");
+               }
+            }
          }
       }
-      targetGridForMovement = battleMap.GetGridCenterOnNavmeshByCoord(potentialTargets[Random.Range(0, potentialTargets.Count)]);
    }
 
    IEnumerator AskForFirstPlayerSkillInputConfirm(SkillAttribute skill,GridCoordinate monsterCoord) {
@@ -268,7 +309,7 @@ public class MonsterController : MonoBehaviour
       battleMap.HighlightConfirmingGrids(confirmingGrids);
    }
    
-   IEnumerator AskForSecondPlayerSkillInputConfirm(SkillAttribute skill,GridCoordinate monsterCoord) {
+   IEnumerator AskForSecondPlayerSkillInputConfirm(MoveSetOnGrid.MoveSetType moveSet,SkillAttribute skill,GridCoordinate monsterCoord) {
     
       while (true)
       {
@@ -291,14 +332,21 @@ public class MonsterController : MonoBehaviour
          
          battleMap.UnHighlightPotentialCastingGrids();
          battleMap.UnHighlightConfirmingGrids();
+         
          Debug.Log("Performing "+skill.name);
+         //battleMap.DealDamageToGrids(confirmingGrids, skill.Damage);
+         
+         List<TurnBasedActorType> actorsToExclude = new List<TurnBasedActorType>();
+         actorsToExclude.Add(TurnBasedActorType.FriendlyControllableMonster);
+         actorsToExclude.Add(TurnBasedActorType.FriendlyUncontrollableMonster);
+         TrimOutNonDamageTarget(confirmingGrids,actorsToExclude);
+         
+         controlledMonster.PerformSkillToGrids(moveSet, confirmingGrids);
          isAskingPlayerSecondCastConfirm = false;
          yield break;
          
       }
    }
-   
-
 
 //===============================================================================================================================
 //Helper
@@ -318,7 +366,7 @@ public class MonsterController : MonoBehaviour
    void UpdateConfirmingGrids(SkillAttribute skill,GridCoordinate currentCoord)
    {
       confirmingGrids.Clear();
-      switch(skill.targetType) {
+      switch(skill.GetTargetType()) {
          case SkillAttribute.TargetType.Single:
             confirmingGrids.Add(firstCastConfirmedGrid);
             break;
@@ -344,10 +392,33 @@ public class MonsterController : MonoBehaviour
    }
 
    void ClearConfirmingGrids() => confirmingGrids.Clear();
-   
+
+   void TrimOutNonDamageTarget(List<GridCoordinate> targets,List<TurnBasedActorType> typesToExclude)
+   {
+      List<GridCoordinate> gridsToExclude = new List<GridCoordinate>();
+      foreach (var target in targets) {
+         if(!battleMap.actorsCoord.ContainsKey(target))
+            continue;
+         TurnBasedActor actor = battleMap.actorsCoord[target];
+         // foreach (TurnBasedActorType excludeType in typesToExclude) {
+         //    if(actor.turnBasedActorType == excludeType)
+         //       targets.Remove(target);
+         // }
+         //
+         if (typesToExclude.Contains(actor.turnBasedActorType))
+         {
+            Debug.Log("Excluded grid "+target+" to damage as it is a "+actor.turnBasedActorType);
+            gridsToExclude.Add(target);
+         }
+      }
+
+      foreach (GridCoordinate gridToExclude in gridsToExclude) {
+         targets.Remove(gridToExclude);
+      }
+   }
    void ResetMonsterControllerState()
    {
-      Debug.Log("reset state");
+      //Debug.Log("reset state");
       isAskingPlayerMovementInput = false;
       gotWalkableGridPos = false;
       isAskingPlayerFirstCastConfirm = false;
@@ -399,13 +470,70 @@ public class MonsterController : MonoBehaviour
    
    
 //NOTE: For Development Testing Only   
-   Vector3 GetRandomReachablePosition(float walkRadius)
+   Vector3 GetOneGridForAIMovement(GridCoordinate center,int range)
    {
-      Vector3 randomPosition = transform.position;
-      randomPosition.x += Random.insideUnitCircle.x*walkRadius;
-      randomPosition.y = 0;
-      randomPosition.z += Random.insideUnitCircle.y*walkRadius;
-      return battleMap.GetGridCenterOnNavmeshByWorldPos(randomPosition);
+      List<GridCoordinate> walkableGrids = battleMap.GetWalkableGridsInRange(center,range);
+
+      if (walkableGrids.Count == 0) {
+         Debug.Log("No possible move");
+         return transform.position;
+      }
+      float maxScore = 0;
+      GridCoordinate targetCoord =walkableGrids[0];
+      foreach (var grid in walkableGrids)
+      {
+         float evaluationScore = EvaluateMoveSetHeuristic(grid, battleMap.gridMoveSets[grid.row, grid.col]);
+         Debug.Log("Scores at grid "+grid+ " with move "+battleMap.gridMoveSets[grid.row, grid.col]+" ="+evaluationScore);
+         if (evaluationScore > maxScore) {
+            maxScore = evaluationScore;
+            targetCoord = grid;
+         }
+      }
+      
+      return battleMap.GetGridCenterOnNavmeshByCoord(targetCoord);
+      //return battleMap.GetGridCenterOnNavmeshByWorldPos(randomPosition);
    }
+
+   float EvaluateMoveSetHeuristic(GridCoordinate moveGrid,MoveSetOnGrid.MoveSetType moveSetType)
+   {
+      SkillAttribute selectedSkill = controlledMonster.GetSkillFromMoveSet(moveSetType);
+      switch (moveSetType)
+      {
+         case MoveSetOnGrid.MoveSetType.Melee:
+         case MoveSetOnGrid.MoveSetType.AOE:
+         case MoveSetOnGrid.MoveSetType.Directional:
+         case MoveSetOnGrid.MoveSetType.UltimateSkill:
+
+            List<GridCoordinate> potentialTargets= selectedSkill.GetPotentialCastingPoint(moveGrid,battleMap.GetNumOfRow(),battleMap.GetNumOfCol());
+            float accumulatedDamage = 0;
+            foreach (var grid in potentialTargets) {
+               if(!battleMap.actorsCoord.ContainsKey(grid))
+                  continue;
+
+               if (battleMap.actorsCoord[grid].turnBasedActorType == TurnBasedActorType.FriendlyControllableMonster ||
+                   battleMap.actorsCoord[grid].turnBasedActorType == TurnBasedActorType.FriendlyUncontrollableMonster) {
+                  accumulatedDamage += selectedSkill.Damage; 
+               }
+            }
+            return accumulatedDamage;
+         
+         case MoveSetOnGrid.MoveSetType.Defense:
+         case MoveSetOnGrid.MoveSetType.Heal:
+            
+            SkillAttribute skillMelee = controlledMonster.GetSkillFromMoveSet( MoveSetOnGrid.MoveSetType.Melee);
+            SkillAttribute skillRanged = controlledMonster.GetSkillFromMoveSet( MoveSetOnGrid.MoveSetType.Directional);
+            SkillAttribute skillAOE = controlledMonster.GetSkillFromMoveSet( MoveSetOnGrid.MoveSetType.AOE);
+            
+            float averageDamage = (skillMelee.Damage + skillRanged.Damage + skillAOE.Damage)/3;
+            averageDamage *= Random.Range(0.2f, 0.5f);
+            float healthPercentage = controlledMonster.currentHP / controlledMonster.maxHp;
+            if (healthPercentage > 0.5) {
+               averageDamage *= (1 + healthPercentage); //prefer heal when <0.5hp , prefer def when >0.5hp
+            }
+            return averageDamage;
+
+      }
+      return 0;
+   } 
    
 }

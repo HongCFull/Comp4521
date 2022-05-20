@@ -54,17 +54,17 @@ public class BattleMap : MonoBehaviour
     [SerializeField] private int numRow;
     
     [Header("Distribution settings")] 
-    [SerializeField] private int skillAWeight;
-    [SerializeField] private int skillBWeight;
-    [SerializeField] private int skillCWeight;
-    [SerializeField] private int skillDWeight;
+    [SerializeField] private int meleeSkillWeight;
+    [SerializeField] private int directionalSkillWeight;
+    [SerializeField] private int AOESkillWeight;
+    [SerializeField] private int ultimateSkillWeight;
     [SerializeField] private int defenseWeight;
     [SerializeField] private int healWeight;
 
     [Header("References")]
     [SerializeField] BattleTerrainCanvas battleTerrainCanvas;
     
-    public static BattleMap Instance { get; private set; }
+   // public static BattleMap Instance { get; private set; }
     
     public MoveSetType[,] gridMoveSets { get; private set; }
     public Dictionary<GridCoordinate, TurnBasedActor> actorsCoord;
@@ -82,8 +82,8 @@ public class BattleMap : MonoBehaviour
     
     void Awake()
     {
-        if (!Instance)
-            Instance = this;
+     //   if (!Instance)
+    //        Instance = this;
         
         gridMoveSets = new MoveSetType[numRow,numCol];
         stretchedGridMoveSets = new MoveSetType[numRow * numCol];
@@ -160,6 +160,33 @@ public class BattleMap : MonoBehaviour
         return new GridCoordinate(rowIndex, colIndex);
     }
 
+    public List<GridCoordinate> GetWalkableGridsInRange(GridCoordinate center,int range)
+    {
+        List<GridCoordinate> walkableGrids = new List<GridCoordinate>();
+        for(int rowOffset = -range; rowOffset <= range ; rowOffset++){
+            for(int colOffset = -range; colOffset<=range ; colOffset++){
+                
+                int rowIndex = center.row + rowOffset;
+                if(rowIndex < 0 || rowIndex >= numRow)
+                    break;
+                
+                int colIndex = center.col + colOffset;
+                if(colIndex <0 || colIndex >= numCol)
+                    continue;
+
+                int manhattanDist = Mathf.Abs(rowIndex-center.row) + Mathf.Abs(colIndex-center.col);
+                if(manhattanDist>range)
+                    continue;
+                
+                GridCoordinate thisGrid = new GridCoordinate(rowIndex,colIndex);
+                if(gridMoveSets[thisGrid.row,thisGrid.col]==MoveSetType.Obstacle)
+                    continue;
+                
+                walkableGrids.Add(thisGrid);
+            }
+        }
+        return walkableGrids;
+    }
     public void RegisterTurnBasedActorOnGrid(TurnBasedActor actor, GridCoordinate coordinate)
     {
         if (actorsCoord.ContainsKey(coordinate)) {
@@ -180,6 +207,33 @@ public class BattleMap : MonoBehaviour
         //Debug.Log("Unregistered actor : "+actor.gameObject.name+" in coord "+coordinate);
     }
     
+    public void DealDamageToGrids(List<GridCoordinate> gridCoordinates, float damage, bool canDmgFriendlyTarget=false)
+    {
+        foreach (var gridCoord in gridCoordinates) {
+            if (!actorsCoord.ContainsKey(gridCoord)) 
+                continue;
+            if (actorsCoord[gridCoord] is IDamageable damageable) {
+                
+                damageable.OnDamageTaken(damage);
+                Debug.Log("damaging grid "+gridCoord+" with dmg :" +damage);
+            }
+
+        }
+    }
+    
+    public void DealDamageToFriendlyGrids(List<GridCoordinate> gridCoordinates, float damage, bool canDmgFriendlyTarget=false)
+    {
+        foreach (var gridCoord in gridCoordinates) {
+            if (!actorsCoord.ContainsKey(gridCoord)) 
+                continue;
+            if (actorsCoord[gridCoord] is IDamageable damageable) {
+                // if(actorsCoord[gridCoord].turnBasedActorType == TurnBasedActorType.EnemyMonster)
+                //     continue;
+                damageable.OnDamageTaken(damage);
+                Debug.Log("damaging grid "+gridCoord+" with dmg :" +damage);
+            }
+        }
+    }
 //===========================================================================================================================    
 //Highlights:
 //===========================================================================================================================
@@ -188,7 +242,7 @@ public class BattleMap : MonoBehaviour
         //Debug.Log("BFS at "+center);
         walkableGridsToHighlight.Clear();
         //UpdateGridsToHighlightByBFS(center, range);
-        UpdateGridsToHighlightBruteForce(center,range);
+        UpdateGridsToHighlight(center,range);
         battleTerrainCanvas.HighlightGrids(walkableGridsToHighlight, gridMovementHighlight);
     }
     public void UnHighlightWalkableGrids(){
@@ -232,20 +286,7 @@ public class BattleMap : MonoBehaviour
     }
     
 
-    public void DealDamageToGrids(List<GridCoordinate> gridCoordinates, float damage)
-    {
-        foreach (var gridCoord in gridCoordinates) {
-            if (!actorsCoord.ContainsKey(gridCoord)) 
-                continue;
-
-            if (actorsCoord[gridCoord] is IDamageable damageable) {
-                damageable.OnDamageTaken(damage);
-            }
-
-        }
-    }
-
-    ///======================================================================================================================================================
+///======================================================================================================================================================
 ///Private Method:
 ///======================================================================================================================================================
 
@@ -262,11 +303,11 @@ public class BattleMap : MonoBehaviour
     
     void InitStretchedGridInfo()
     {
-        int totalWeightSum = skillAWeight + skillBWeight + skillCWeight + skillDWeight + defenseWeight + healWeight;
-        int numOfSkillA = numRow * numCol* skillAWeight / totalWeightSum;
-        int numOfSkillB = numRow * numCol* skillBWeight / totalWeightSum;
-        int numOfSkillC = numRow * numCol* skillCWeight / totalWeightSum;
-        int numOfSkillD = numRow * numCol* skillDWeight / totalWeightSum;
+        int totalWeightSum = meleeSkillWeight + directionalSkillWeight + AOESkillWeight + ultimateSkillWeight + defenseWeight + healWeight;
+        int numOfSkillA = numRow * numCol* meleeSkillWeight / totalWeightSum;
+        int numOfSkillB = numRow * numCol* directionalSkillWeight / totalWeightSum;
+        int numOfSkillC = numRow * numCol* AOESkillWeight / totalWeightSum;
+        int numOfSkillD = numRow * numCol* ultimateSkillWeight / totalWeightSum;
         int numOfDefense = numRow * numCol* defenseWeight / totalWeightSum;
         int numOfHeal = numRow * numCol* healWeight / totalWeightSum;
 
@@ -316,7 +357,7 @@ public class BattleMap : MonoBehaviour
         return values[new System.Random().Next(0,values.Length-2)]; //NO obstacles and pickup
     }
 
-    void UpdateGridsToHighlightBruteForce(GridCoordinate start,int range){
+    void UpdateGridsToHighlight(GridCoordinate start,int range){
         for(int rowOffset = -range; rowOffset <= range ; rowOffset++){
             for(int colOffset = -range; colOffset<=range ; colOffset++){
                 
