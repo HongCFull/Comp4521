@@ -75,7 +75,6 @@ public class BattleMap : MonoBehaviour
     private List<GridCoordinate> potentialCastGridsToHighlight;
     private List<GridCoordinate> confirmingGridsToHighlight;
 
-    
     private float cellWidth;    //x
     private float cellHeight;   //y
     private float cellLength;   //z

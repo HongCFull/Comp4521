@@ -44,10 +44,10 @@ public class MonsterInfo : ScriptableObject
     [SerializeField] private SkillAttribute skillDefense;
     [SerializeField] private SkillAttribute skillHeal;
 
-    public bool IsUnlocked => isUnlocked;
     public ElementType ElementType => elementType;
     public int MovementRange => movementRange;
 
+    public bool IsUnlocked => evolutionChain.IsUnlocked;
 //TODO: GameBalance, for prototyping only:
     public float GetHealthPointAtLv(int lv) => baseHealthPoint + Mathf.Pow(GetLevelRatio(lv),hpGrowthRate);
     public float GetAttackAtLv(int lv) => baseAttack + Mathf.Pow(GetLevelRatio(lv),attackGrowthRate);

@@ -16,14 +16,20 @@ public class EvolutionChain : ScriptableObject
    [SerializeField] [Range(1,3)] private int evolutionStage=1;
    [SerializeField] [Range(1,100)] private int monsterLevel=1;
    [SerializeField] [Range(0,10000f)] private float monsterExperience;
+   private bool isUnlocked;
+   
    private float exp;
    private float lv;
    
+   public bool IsUnlocked => isUnlocked;
    //Move it to evolution chain
    public int MonsterLevel => monsterLevel;
    public float MonsterExperience => monsterExperience;
    public float GainExperience(float exp) => monsterExperience += exp;
 
+   public void SetToIsUnlocked() => isUnlocked = true;
+
+   
    //TODO: Unlock the next evolution stage etc. if next stage is reached
    
    
