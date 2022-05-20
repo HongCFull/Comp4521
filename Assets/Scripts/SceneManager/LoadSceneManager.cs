@@ -3,9 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UIElements;
 
 public class LoadSceneManager : MonoBehaviour
 {
+    [SerializeField] private GameObject loadSceneImage;
+    [SerializeField] private Slider loadSceneProgressBar;
     public static LoadSceneManager Instance { get; private set; }
     private void Start()
     {
@@ -27,6 +30,7 @@ public class LoadSceneManager : MonoBehaviour
         }
 
         AsyncOperation loadSceneOperation= SceneManager.LoadSceneAsync(index);
+        loadSceneImage.SetActive(true);
         while (!loadSceneOperation.isDone) {
             yield return null;
         }

@@ -32,9 +32,6 @@ public class MonsterInfo : ScriptableObject
     
     [Header("Range Category")]
     [SerializeField] private int movementRange;
-    [SerializeField] private int meleeAttackRange;
-    [SerializeField] private int longRangeAttackRange;
-    [SerializeField] private int specialSkillRange;
 
     [Header("Skills Attributes")]
     [SerializeField] private SkillAttribute skillMelee;

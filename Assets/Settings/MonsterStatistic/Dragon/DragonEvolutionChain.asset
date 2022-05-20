@@ -18,3 +18,4 @@ MonoBehaviour:
   evolutionStage: 1
   monsterLevel: 1
   monsterExperience: 0
+  isUnlocked: 1

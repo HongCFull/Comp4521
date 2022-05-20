@@ -16,7 +16,7 @@ public class EvolutionChain : ScriptableObject
    [SerializeField] [Range(1,3)] private int evolutionStage=1;
    [SerializeField] [Range(1,100)] private int monsterLevel=1;
    [SerializeField] [Range(0,10000f)] private float monsterExperience;
-   private bool isUnlocked;
+   [SerializeField] bool isUnlocked;
    
    private float exp;
    private float lv;

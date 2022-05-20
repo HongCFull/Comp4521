@@ -11,14 +11,19 @@ public class LevelConstructionInfoSender : MonoBehaviour
 {
     [SerializeField] private LevelSetting levelSetting;
     [SerializeField] private List<UserMonsterSpawnSetting> userMonsterSpawnSettings;
+    
+    [Tooltip("No need to assign scene loading")]
     [SerializeField] private UnityEvent OnFinishSending;
     
+    [SerializeField] private int combatSceneIndex = 2;
+
     [ContextMenu("Send LV info to buffer")]
     public void SendLevelConstructionInfoToBuffer()
     {
         LevelConstructionInfoBuffer.Instance.AddActorSpawningInfo(levelSetting.GetMonsterSpawningInfos());
         SendUserMonsterSpawningInfoToBuffer();
         OnFinishSending.Invoke();
+        LoadSceneManager.Instance.LoadScene(combatSceneIndex);
     }
 
     private void SendUserMonsterSpawningInfoToBuffer()
