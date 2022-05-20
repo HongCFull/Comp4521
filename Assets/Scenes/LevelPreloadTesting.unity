@@ -415,7 +415,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1032940856}
         m_TargetAssemblyTypeName: LoadSceneManager, Assembly-CSharp
-        m_MethodName: LoadScene
+        m_MethodName: LoadSceneWithLoadSceneBG
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

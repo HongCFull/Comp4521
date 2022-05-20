@@ -23,7 +23,7 @@ public class LevelConstructionInfoSender : MonoBehaviour
         LevelConstructionInfoBuffer.Instance.AddActorSpawningInfo(levelSetting.GetMonsterSpawningInfos());
         SendUserMonsterSpawningInfoToBuffer();
         OnFinishSending.Invoke();
-        LoadSceneManager.Instance.LoadScene(combatSceneIndex);
+        LoadSceneManager.Instance.LoadSceneWithLoadSceneBG(combatSceneIndex);
     }
 
     private void SendUserMonsterSpawningInfoToBuffer()

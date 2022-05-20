@@ -7,13 +7,13 @@ EditorBuildSettings:
   m_Scenes:
   - enabled: 0
     path: 
-    guid: d1c3109bdb54ad54c8a2b2838528e640
+    guid: 00000000000000000000000000000000
   - enabled: 1
-    path: Assets/Scenes/Prototype.unity
-    guid: eaa2729e20a25ce47bcce2fe780137d4
+    path: Assets/Scenes/StartScene.unity
+    guid: 7eec405908bcdac4a9b109c22b66b91d
   - enabled: 1
-    path: Assets/Scenes/LevelPreloadTesting.unity
-    guid: 4b2380b17d4ec2742add84868e39d61b
+    path: Assets/Scenes/MainMenu.unity
+    guid: 07679b23462b37845b375a1c2b8f62f7
   - enabled: 1
     path: Assets/Scenes/GrassRegion.unity
     guid: cb174a995fb662a4aaf04fea404e0be0

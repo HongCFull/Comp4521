@@ -82,7 +82,7 @@ public class CombatManager : MonoBehaviour
 
     public void LoadScene(int sceneIndex)
     {
-        LoadSceneManager.Instance.LoadScene(sceneIndex);
+        LoadSceneManager.Instance.LoadSceneWithLoadSceneBG(sceneIndex);
     }
 
 //=================================================================================================================
